@@ -1,0 +1,5 @@
+.gradle
+.idea
+build
+mcs.properties
+/src/main/resources/token.properties
