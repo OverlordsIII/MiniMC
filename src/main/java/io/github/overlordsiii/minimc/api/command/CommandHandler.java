@@ -1,33 +1,25 @@
-package io.github.overlordsiii.minimc.api;
+package io.github.overlordsiii.minimc.api.command;
 
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 
-import io.github.overlordsiii.minimc.Main;
-import io.github.overlordsiii.minimc.api.command.BaseCommand;
-import io.github.overlordsiii.minimc.api.command.TextCommand;
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.events.Event;
-import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.events.message.MessageDeleteEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageDeleteEvent;
+import net.dv8tion.jda.api.events.message.guild.react.GenericGuildMessageReactionEvent;
+import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
@@ -41,10 +33,13 @@ public class CommandHandler extends ListenerAdapter {
 
 	private final Map<String, Message> sentMessages = new HashMap<>();
 
-	private CommandHandler(Set<TextCommand> commands, Set<BaseCommand<GuildMemberJoinEvent>> joinEvents, Set<BaseCommand<MessageDeleteEvent>> deleteCommands) {
+	private final Set<BaseCommand<GuildMessageReactionAddEvent>> reactionCommands;
+
+	private CommandHandler(Set<TextCommand> commands, Set<BaseCommand<GuildMemberJoinEvent>> joinEvents, Set<BaseCommand<MessageDeleteEvent>> deleteCommands, Set<BaseCommand<GuildMessageReactionAddEvent>> reactionAddedCommands) {
 		this.textCommands = commands;
 		this.joinEvents = joinEvents;
 		this.deleteCommands = deleteCommands;
+		this.reactionCommands  = reactionAddedCommands;
 	}
 
 	public static Builder builder() {
@@ -56,7 +51,6 @@ public class CommandHandler extends ListenerAdapter {
 		if (event.getAuthor().isBot()) return;
 
 		sentMessages.put(event.getMessageId(), event.getMessage());
-
 
 		Guild guild = event.getGuild();
 
@@ -104,6 +98,15 @@ public class CommandHandler extends ListenerAdapter {
 	}
 
 	@Override
+	public void onGuildMessageReactionAdd(@NotNull GuildMessageReactionAddEvent event) {
+		reactionCommands.forEach(command -> {
+			if (command.getPredicate().test(event)) {
+				command.execute(event);
+			}
+		});
+	}
+
+	@Override
 	public void onMessageDelete(@NotNull MessageDeleteEvent event) {
 
 		deleteCommands.forEach(eventBaseCommand -> {
@@ -121,6 +124,8 @@ public class CommandHandler extends ListenerAdapter {
 		private final Set<BaseCommand<GuildMemberJoinEvent>> joinCommands = new HashSet<>();
 
 		private final Set<BaseCommand<MessageDeleteEvent>> deleteCommands = new HashSet<>();
+
+		private final Set<BaseCommand<GuildMessageReactionAddEvent>> reactionAddedCommands = new HashSet<>();
 
 		private Builder() {}
 
@@ -142,8 +147,14 @@ public class CommandHandler extends ListenerAdapter {
 			return this;
 		}
 
+		public Builder addReactionCommand(BaseCommand<GuildMessageReactionAddEvent> command) {
+			reactionAddedCommands.add(command);
+
+			return this;
+		}
+
 		public CommandHandler build() {
-			return new CommandHandler(textCommands, joinCommands, deleteCommands);
+			return new CommandHandler(textCommands, joinCommands, deleteCommands, reactionAddedCommands);
 		}
 
 	}

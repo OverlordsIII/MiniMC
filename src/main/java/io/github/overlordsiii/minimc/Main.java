@@ -2,7 +2,8 @@ package io.github.overlordsiii.minimc;
 
 import javax.security.auth.login.LoginException;
 
-import io.github.overlordsiii.minimc.api.CommandHandler;
+import io.github.overlordsiii.minimc.api.command.CommandHandler;
+import io.github.overlordsiii.minimc.commands.join.AddDefaultRoleCommand;
 import io.github.overlordsiii.minimc.commands.text.admin.clear.ClearUserCommand;
 import io.github.overlordsiii.minimc.commands.text.admin.kick.BanCommand;
 import io.github.overlordsiii.minimc.commands.text.admin.kick.KickCommand;
@@ -11,11 +12,16 @@ import io.github.overlordsiii.minimc.commands.text.admin.clear.ClearCommand;
 import io.github.overlordsiii.minimc.commands.text.admin.mute.MuteCommand;
 import io.github.overlordsiii.minimc.commands.join.MuteOnJoinCommand;
 import io.github.overlordsiii.minimc.commands.text.admin.mute.UnmuteCommand;
+import io.github.overlordsiii.minimc.commands.text.game.CreateCommand;
+import io.github.overlordsiii.minimc.commands.text.game.GameLinkCommand;
+import io.github.overlordsiii.minimc.commands.text.game.RocketReactionCommand;
+import io.github.overlordsiii.minimc.commands.text.game.StartCommand;
 import io.github.overlordsiii.minimc.commands.text.status.ActivityCommand;
 import io.github.overlordsiii.minimc.commands.text.status.ActivityTypeCommand;
 import io.github.overlordsiii.minimc.commands.text.status.StatusCommand;
 import io.github.overlordsiii.minimc.config.JsonHandler;
 import io.github.overlordsiii.minimc.config.PropertiesHandler;
+import io.github.overlordsiii.minimc.api.AmongUsGame;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -42,14 +48,21 @@ public class Main {
 		.addTextCommand(new BanCommand())
 		.addTextCommand(new ClearCommand())
 		.addTextCommand(new ClearUserCommand())
+		.addTextCommand(new CreateCommand())
+		.addTextCommand(new GameLinkCommand())
+		.addTextCommand(new StartCommand())
 		.addJoinCommand(new MuteOnJoinCommand())
+		.addJoinCommand(new AddDefaultRoleCommand())
 		.addMsgDeleteCommand(new LogDeleteMessage())
+		.addReactionCommand(new RocketReactionCommand())
 		.build();
 
 	public static final JsonHandler MUTED_CONFIG = new JsonHandler("mutedMembers.json")
 		.initialize();
 
 	public static JDA JDA;
+
+	public static AmongUsGame currentGame;
 
 	public static final PropertiesHandler CONFIG = PropertiesHandler.builder()
 		.setFileName("mcs.properties")
@@ -58,6 +71,8 @@ public class Main {
 		.addConfigOption("activityType", Activity.ActivityType.DEFAULT.toString())
 		.addConfigOption("activity", "KING OF DND")
 		.addConfigOption("mutedRole", "Muted")
+		.addConfigOption("defaultRole", "Minecrafter")
+		.addConfigOption("modRole", "Moderator")
 		.addConfigOption("botLog", "bot-log")
 		.build();
 
