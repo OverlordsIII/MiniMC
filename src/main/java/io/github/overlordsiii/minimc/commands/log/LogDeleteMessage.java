@@ -1,11 +1,14 @@
 package io.github.overlordsiii.minimc.commands.log;
 
+import java.awt.Color;
 import java.util.List;
 import java.util.Map;
 
 import io.github.overlordsiii.minimc.Main;
+import io.github.overlordsiii.minimc.api.EmbedCreator;
 import io.github.overlordsiii.minimc.api.command.BaseCommand;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageDeleteEvent;
 
@@ -25,7 +28,16 @@ public class LogDeleteMessage implements BaseCommand<MessageDeleteEvent> {
 		if (messageMap.containsKey(id)) {
 			Message message = messageMap.get(id);
 
-			channel.sendMessage(message.getAuthor().getAsMention() + " deleted a message in <#" + message.getChannel().getIdLong() +   ">! Content was: " + message.getContentRaw()).queue();
+			MessageEmbed messageEmbed = new EmbedCreator()
+				.setUser(message.getAuthor())
+				.setColor(Color.CYAN)
+				.setTitle("A message was deleted!")
+				.addField("Who", message.getAuthor().getAsMention())
+				.addField("Where", "<#" + message.getChannel().getIdLong() + ">")
+				.addField("Content", message.getContentRaw())
+				.create();
+
+			channel.sendMessage(messageEmbed).queue();
 		}
 
 	}

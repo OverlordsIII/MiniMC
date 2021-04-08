@@ -1,11 +1,14 @@
 package io.github.overlordsiii.minimc.commands.text.game;
 
 
+import java.awt.Color;
+
 import io.github.overlordsiii.minimc.Main;
+import io.github.overlordsiii.minimc.api.EmbedCreator;
 import io.github.overlordsiii.minimc.api.command.BaseCommand;
-import io.github.overlordsiii.minimc.util.EmbedUtil;
+import net.dv8tion.jda.api.entities.IMentionable;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent;
-import net.dv8tion.jda.api.hooks.SubscribeEvent;
 
 public class RocketReactionCommand implements BaseCommand<GuildMessageReactionAddEvent> {
 
@@ -24,7 +27,8 @@ public class RocketReactionCommand implements BaseCommand<GuildMessageReactionAd
 			event.retrieveMessage().queue(message -> {
 				message.removeReaction(event.getReactionEmote().getEmoji(), event.getUser()).queue();
 				Main.currentGame.removeUser(event.getUser());
-				Main.currentGame.getMessage().editMessage(EmbedUtil.createUpdatedEmbed(EmbedUtil.createDefaultEmbed(Main.currentGame.getAuthor()), Main.currentGame.getPlayingUsers())).queue();
+
+				Main.currentGame.getMessage().editMessage(getEmbed()).queue();
 			});
 			return;
 		}
@@ -33,7 +37,18 @@ public class RocketReactionCommand implements BaseCommand<GuildMessageReactionAd
 		event.retrieveMessage().queue(message -> {
 			message.removeReaction(event.getReactionEmote().getEmoji(), event.getUser()).queue();
 			Main.currentGame.addUser(event.getUser());
-			Main.currentGame.getMessage().editMessage(EmbedUtil.createUpdatedEmbed(EmbedUtil.createDefaultEmbed(Main.currentGame.getAuthor()), Main.currentGame.getPlayingUsers())).queue();
+			Main.currentGame.getMessage().editMessage(getEmbed()).queue();
 		});
+	}
+
+	public static MessageEmbed getEmbed() {
+		return new EmbedCreator()
+			.setUser(Main.currentGame.getAuthor())
+			.setColor(Color.GREEN)
+			.setTitle("Start a game of Among Us!")
+			.addField("How to Participate", "React to this message with the reaction to indicate you are playing this game.")
+			.addField("How to Start", "Then run the command `!start` to begin")
+			.addValuesAsField("Participants", IMentionable::getAsMention, Main.currentGame.getPlayingUsers())
+			.create(Main.currentGame.getAuthor());
 	}
 }

@@ -1,11 +1,14 @@
 package io.github.overlordsiii.minimc.commands.text.game;
 
+import java.awt.Color;
+
 import io.github.overlordsiii.minimc.Main;
+import io.github.overlordsiii.minimc.api.EmbedCreator;
 import io.github.overlordsiii.minimc.api.command.TextCommand;
 import io.github.overlordsiii.minimc.api.AmongUsGame;
-import io.github.overlordsiii.minimc.util.EmbedUtil;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class CreateCommand implements TextCommand {
@@ -20,9 +23,17 @@ public class CreateCommand implements TextCommand {
 
 
 		if (Main.currentGame != null) {
+
+			MessageEmbed embed = new EmbedCreator()
+				.setUser(event.getAuthor())
+				.addErrorEmbed()
+				.addField("Cannot Create Game", "Reason: You can't start a game if there is one already in progress")
+				.addLink(Main.currentGame.getMessage())
+				.addField("Game Author", Main.currentGame.getAuthor().getAsMention())
+				.create(event.getAuthor());
+
 			message
-				.reply(EmbedUtil.getCannotCreateEmbed(event.getAuthor(), Main.currentGame.getAuthor(), Main.currentGame.getMessage(),
-					"You can't start a game if there is already one in progress!"))
+				.reply(embed)
 				.mentionRepliedUser(false)
 				.queue();
 			return;
@@ -30,8 +41,15 @@ public class CreateCommand implements TextCommand {
 
 		MessageChannel channel = event.getChannel();
 
+		MessageEmbed embed = new EmbedCreator()
+			.setUser(message.getAuthor())
+			.setColor(Color.GREEN)
+			.setTitle("Start a game of Among Us!")
+			.addField("How to Participate", "React to this message with the reaction to indicate you are playing this game.")
+			.addField("How to Start", "Then run the command `!start` to begin")
+			.create(message.getAuthor());
 
-		channel.sendMessage(EmbedUtil.createDefaultEmbed(message.getAuthor()).build()).queue(embedMessage -> {
+		channel.sendMessage(embed).queue(embedMessage -> {
 
 			Main.currentGame = new AmongUsGame(embedMessage, message.getAuthor());
 
@@ -39,7 +57,7 @@ public class CreateCommand implements TextCommand {
 			embedMessage.addReaction("\uD83D\uDE80").queue();
 
 			Main.currentGame.addUser(event.getAuthor());
-			Main.currentGame.getMessage().editMessage(EmbedUtil.createUpdatedEmbed(EmbedUtil.createDefaultEmbed(Main.currentGame.getAuthor()), Main.currentGame.getPlayingUsers())).queue();
+			Main.currentGame.getMessage().editMessage(RocketReactionCommand.getEmbed()).queue();
 		});
 	}
 

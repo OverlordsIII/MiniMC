@@ -10,15 +10,16 @@ import java.util.Set;
 
 import javax.annotation.Nonnull;
 
+import io.github.overlordsiii.minimc.api.EmbedCreator;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.events.message.MessageDeleteEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.events.message.guild.react.GenericGuildMessageReactionEvent;
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
@@ -67,7 +68,15 @@ public class CommandHandler extends ListenerAdapter {
 			if (content.trim().startsWith(command.getPrefix() + command.getName())) {
 
 				if (command.getNeededPermissions() != null && member != null && !member.hasPermission(command.getNeededPermissions())) {
-						event.getChannel().sendMessage("Cannot execute command \"" + command.getName() +"\" because you do not have the permissions required! (" + Arrays.toString(command.getNeededPermissions()) + ")").queue();
+
+					EmbedCreator creator = new EmbedCreator();
+
+					MessageEmbed embed = creator
+						.addErrorEmbed()
+						.setUser(event.getAuthor())
+						.addValuesAsField("Cannot execute command \"" + command.getName() +"\"", Arrays.stream(command.getNeededPermissions()).map(Enum::toString).toArray(String[]::new))
+						.create(event.getAuthor());
+						event.getChannel().sendMessage(embed).queue();
 						return;
 				}
 

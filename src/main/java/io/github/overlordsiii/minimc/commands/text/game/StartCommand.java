@@ -1,12 +1,13 @@
 package io.github.overlordsiii.minimc.commands.text.game;
 
+import java.awt.Color;
 import java.util.List;
 import java.util.Random;
 
 
 import io.github.overlordsiii.minimc.Main;
+import io.github.overlordsiii.minimc.api.EmbedCreator;
 import io.github.overlordsiii.minimc.api.command.TextCommand;
-import io.github.overlordsiii.minimc.util.EmbedUtil;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -23,21 +24,44 @@ public class StartCommand implements TextCommand {
 
 		Message message = event.getMessage();
 
-		if (!message.getContentRaw().equalsIgnoreCase("!start")) {
-			return;
-		}
 		if (Main.currentGame == null) {
-			message.reply(EmbedUtil.getCannotCreateEmbed(event.getAuthor(), null, null, "Cannot start a game if there was no game created!")).queue();
+
+			MessageEmbed embed = new EmbedCreator()
+				.setUser(event.getAuthor())
+				.addErrorEmbed()
+				.addField("Cannot Create Game!", "Reason: Cannot start a game if there was no game created!")
+				.create(event.getAuthor());
+
+			message.reply(embed).queue();
 			return;
 		}
 
 		if (Main.currentGame.getAuthor().getIdLong() != message.getAuthor().getIdLong()) {
-			message.reply(EmbedUtil.getCannotCreateEmbed(event.getAuthor(), Main.currentGame.getAuthor(), Main.currentGame.getMessage(), "You cannot start the game since you are not the author!")).queue();
+
+			MessageEmbed embed = new EmbedCreator()
+				.setUser(event.getAuthor())
+				.addErrorEmbed()
+				.addField("Cannot Start Game!", "Reason: You cannot start the game since you are not the author!")
+				.addLink(Main.currentGame.getMessage())
+				.addField("Game Creator", Main.currentGame.getAuthor().getAsMention())
+				.create(event.getAuthor());
+
+
+			message.reply(embed).queue();
 			return;
 		}
 
 		if (Main.currentGame.getPlayingUsers().size() < 2) {
-			message.reply(EmbedUtil.getCannotCreateEmbed(event.getAuthor(), Main.currentGame.getAuthor(), Main.currentGame.getMessage(), "Cannot start the game with only one person playing")).queue();
+
+			MessageEmbed embed = new EmbedCreator()
+				.setUser(event.getAuthor())
+				.addErrorEmbed()
+				.addField("Cannot Start Game!", "Reason: Cannot start game with only one person playing!")
+				.addLink(Main.currentGame.getMessage())
+				.addField("Game Creator", Main.currentGame.getAuthor().getAsMention())
+				.create(event.getAuthor());
+
+			message.reply(embed).queue();
 			return;
 		}
 
@@ -45,8 +69,16 @@ public class StartCommand implements TextCommand {
 
 		List<User> playing = Main.currentGame.getPlayingUsers();
 
-		filterAndDmImposters(playing);
-		playing.forEach(user -> sendPrivateMessage(user, EmbedUtil.createCrewmateEmbedSpec(user)));
+		filterAndDmImposters(playing, event.getAuthor());
+
+
+
+		playing.forEach(user -> sendPrivateMessage(user, new EmbedCreator()
+			.setColor(Color.CYAN)
+			.setUser(user)
+			.setTitle("You are a crewmate!")
+			.addField("Your Job", "You are to find the imposter and win the bedwars game. Try not to die and win! If you think you see the imposter, vote them out at the gen upgrade")
+			.create(event.getAuthor())));
 
 
 		Main.currentGame = null;
@@ -54,7 +86,7 @@ public class StartCommand implements TextCommand {
 
 	}
 
-	private static void filterAndDmImposters(List<User> users) {
+	private static void filterAndDmImposters(List<User> users, User executor) {
 
 		int imposters = Main.CONFIG.getConfigOption("imposters", Integer::parseInt);
 
@@ -62,7 +94,11 @@ public class StartCommand implements TextCommand {
 		for (int i = 0; i < imposters; i++) {
 			int random = RANDOM.nextInt(users.size());
 			User imposter = users.get(random);
-			sendPrivateMessage(imposter, EmbedUtil.createImposterEmbedSpec(imposter));
+			sendPrivateMessage(imposter, new EmbedCreator()
+			.setColor(Color.RED)
+			.setTitle("You are the Imposter!")
+			.addField("Your Job", "You are to team grief your bedwars team without being noticed. If you are noticed, the crewmates can vote you out and possibly win the game")
+			.create(executor));
 			users.remove(random);
 		}
 

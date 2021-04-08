@@ -1,8 +1,12 @@
 package io.github.overlordsiii.minimc.commands.text.admin.clear;
 
+import java.awt.Color;
+
 import com.google.common.base.Throwables;
+import io.github.overlordsiii.minimc.api.EmbedCreator;
 import io.github.overlordsiii.minimc.api.command.TextCommand;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class ClearCommand implements TextCommand {
@@ -12,22 +16,39 @@ public class ClearCommand implements TextCommand {
 		int number;
 		try {
 			number = Integer.parseInt(content[1]);
-		} catch (Exception e) {
-			event.getChannel().sendMessage("Could not delete messages because " + content[1] + " is not a number!").queue();
-			event.getChannel().sendMessage("Debug: " + e).queue();
+		} catch (NumberFormatException e) {
+
+			MessageEmbed embed = new EmbedCreator()
+				.addErrorEmbed()
+				.addField("Could not delete messages!", "Reason: " + content[1] + " is either not a number or is too large!")
+				.create(event.getAuthor());
+
+
+			event.getChannel().sendMessage(embed).queue();
 			return;
 		}
 
 		if (number > 100) {
-			event.getChannel().sendMessage("Cannot delete more than 100 messages at once!").queue();
+
+			MessageEmbed embed = new EmbedCreator()
+				.addErrorEmbed()
+				.addField("Cannot delete messages!", "Reason: Cannot delete more than 100 messages at once!")
+				.create(event.getAuthor());
+
+			event.getChannel().sendMessage(embed).queue();
 			return;
 		}
 
+		MessageEmbed embed = new EmbedCreator()
+			.setColor(Color.GREEN)
+			.setUser(event.getAuthor())
+			.setTitle("Deleted " + number + " messages")
+			.create(event.getAuthor());
+
 		event.getChannel().getIterableHistory()
 			.takeAsync(number)
-			.thenAccept(list -> event.getChannel().purgeMessages(list));
-
-		event.getChannel().sendMessage("Deleted " + number + " messages").queue();
+			.thenAccept(list -> event.getChannel().purgeMessages(list))
+			.thenRun(() -> event.getChannel().sendMessage(embed).queue());
 	}
 
 	@Override
