@@ -7,6 +7,7 @@ import io.github.overlordsiii.minimc.api.command.TextCommand;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import org.jetbrains.annotations.NotNull;
 
 public class KickCommand implements TextCommand {
 	@Override
@@ -17,7 +18,8 @@ public class KickCommand implements TextCommand {
 			MessageEmbed embed = new EmbedCreator()
 				.setColor(Color.CYAN)
 				.setUser(member.getUser())
-				.setTitle("Kicked " + member.getAsMention())
+				.setTitle("Kicked User")
+				.addField("Kicked User", member.getAsMention())
 				.create(event.getAuthor());
 
 			event.getChannel().sendMessage(embed).queue();
@@ -25,7 +27,7 @@ public class KickCommand implements TextCommand {
 	}
 
 	@Override
-	public String getName() {
+	public @NotNull String getName() {
 		return "kick";
 	}
 

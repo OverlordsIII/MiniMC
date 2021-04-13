@@ -9,17 +9,17 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
 
-public class BanCommand implements TextCommand {
+public class UnbanCommand implements TextCommand {
 	@Override
 	public void execute(MessageReceivedEvent event) {
-		event.getMessage().getMentionedMembers().forEach(member -> {
-			member.ban(0).queue();
+		event.getMessage().getMentionedUsers().forEach(user -> {
+			event.getGuild().unban(user).queue();
 
 			MessageEmbed embed = new EmbedCreator()
 				.setColor(Color.CYAN)
-				.setUser(member.getUser())
-				.setTitle("Banned User")
-				.addField("Banned User", member.getAsMention())
+				.setUser(user)
+				.setTitle("Unbanned User")
+				.addField("Unbanned User", user.getAsMention())
 				.create(event.getAuthor());
 
 			event.getChannel().sendMessage(embed).queue();
@@ -33,6 +33,6 @@ public class BanCommand implements TextCommand {
 
 	@Override
 	public @NotNull String getName() {
-		return "ban";
+		return "unban";
 	}
 }

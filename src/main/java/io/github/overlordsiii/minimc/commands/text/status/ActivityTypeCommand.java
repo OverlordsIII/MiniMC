@@ -10,10 +10,11 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.managers.Presence;
+import org.jetbrains.annotations.NotNull;
 
 public class ActivityTypeCommand implements TextCommand {
 	@Override
-	public String getName() {
+	public @NotNull String getName() {
 		return "activityType";
 	}
 

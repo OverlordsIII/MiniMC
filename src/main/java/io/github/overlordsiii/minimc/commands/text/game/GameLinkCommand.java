@@ -9,6 +9,7 @@ import io.github.overlordsiii.minimc.api.command.TextCommand;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import org.jetbrains.annotations.NotNull;
 
 public class GameLinkCommand implements TextCommand {
 
@@ -42,7 +43,7 @@ public class GameLinkCommand implements TextCommand {
 	}
 
 	@Override
-	public String getName() {
+	public @NotNull String getName() {
 		return "gamelink";
 	}
 }

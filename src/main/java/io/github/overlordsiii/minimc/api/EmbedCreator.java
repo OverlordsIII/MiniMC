@@ -1,11 +1,13 @@
 package io.github.overlordsiii.minimc.api;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
@@ -61,6 +63,20 @@ public class EmbedCreator {
 
 		this.builder
 			.addField(name, builder.toString(), false);
+		return this;
+	}
+
+	public EmbedCreator addAsMultipleFields(String name, String... values) {
+
+		this.builder.addField(name, values[0], false);
+
+		List<String> list = new ArrayList<>(Arrays.asList(values));
+
+		list.remove(values[0]);
+
+		for (String value : list) {
+			this.builder.addField("", value, false);
+		}
 
 		return this;
 	}
@@ -68,13 +84,13 @@ public class EmbedCreator {
 	@SafeVarargs
 	public final <T> EmbedCreator addValuesAsField(String name, Function<T, String> converter, T... unparsed) {
 		return addValuesAsField(name, Arrays.stream(unparsed)
-			.map(converter)
+			.map(converter == null ? Object::toString : converter)
 			.toArray(String[]::new));
 	}
 
 	public final <T> EmbedCreator addValuesAsField(String name, Function<T, String> converter, List<T> unparsed) {
 		return addValuesAsField(name, unparsed.stream()
-			.map(converter)
+			.map(converter == null ? Object::toString : converter)
 			.toArray(String[]::new));
 	}
 
@@ -119,7 +135,7 @@ public class EmbedCreator {
 	public MessageEmbed create(User invoker) {
 
 		if (invoker != null) {
-			this.builder.setFooter("Invoked By " + invoker.getAsMention(), invoker.getAvatarUrl());
+			this.builder.setFooter("Invoked By " + invoker.getName(), invoker.getAvatarUrl());
 		}
 
 

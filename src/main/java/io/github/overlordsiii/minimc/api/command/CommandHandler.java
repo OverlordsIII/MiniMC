@@ -74,7 +74,7 @@ public class CommandHandler extends ListenerAdapter {
 					MessageEmbed embed = creator
 						.addErrorEmbed()
 						.setUser(event.getAuthor())
-						.addValuesAsField("Cannot execute command \"" + command.getName() +"\"", Arrays.stream(command.getNeededPermissions()).map(Enum::toString).toArray(String[]::new))
+						.addValuesAsField("Cannot execute command \"" + command.getName() +"\"", Enum::toString, command.getNeededPermissions())
 						.create(event.getAuthor());
 						event.getChannel().sendMessage(embed).queue();
 						return;

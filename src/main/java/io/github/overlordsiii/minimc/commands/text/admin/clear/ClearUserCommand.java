@@ -17,6 +17,7 @@ import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import org.jetbrains.annotations.NotNull;
 
 public class ClearUserCommand implements TextCommand {
 	@Override
@@ -58,7 +59,7 @@ public class ClearUserCommand implements TextCommand {
 	}
 
 	@Override
-	public String getName() {
+	public @NotNull String getName() {
 		return "userclear";
 	}
 

@@ -23,7 +23,7 @@ public class MuteOnJoinCommand implements BaseCommand<GuildMemberJoinEvent> {
 
 		Member member = event.getMember();
 
-		List<Role> roles = event.getGuild().getRolesByName("Muted", true);
+		List<Role> roles = event.getGuild().getRolesByName(Main.CONFIG.getConfigOption("Muted"), true);
 
 		if (object.has(Long.toString(member.getIdLong()))) {
 			JsonObject element = object.get(Long.toString(member.getIdLong())).getAsJsonObject();
@@ -33,7 +33,8 @@ public class MuteOnJoinCommand implements BaseCommand<GuildMemberJoinEvent> {
 			MessageEmbed embed = new EmbedCreator()
 				.setTitle("You Were Muted!")
 				.setColor(Color.RED)
-				.addField("Muted By " + idToMention(entry.getModerator()), "Reason: " + entry.getReason())
+				.addField("Muted By Moderator", "Muted by " + idToMention(entry.getModerator()))
+				.addField("Reason", entry.getReason())
 				.create();
 
 			member.getUser().openPrivateChannel()

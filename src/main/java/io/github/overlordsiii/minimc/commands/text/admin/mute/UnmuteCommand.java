@@ -19,6 +19,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import org.jetbrains.annotations.NotNull;
 
 public class UnmuteCommand implements TextCommand {
 	@Override
@@ -74,7 +75,7 @@ public class UnmuteCommand implements TextCommand {
 					.setColor(Color.CYAN)
 					.setUser(member.getUser())
 					.setTitle("Unmuted User")
-					.addField("Unmuted " + member.getAsMention(), "")
+					.addField("", member.getAsMention())
 					.create(event.getAuthor());
 
 				event.getChannel().sendMessage(embed).queue();
@@ -84,7 +85,8 @@ public class UnmuteCommand implements TextCommand {
 					.setUser(member.getUser())
 					.setColor(Color.RED)
 					.setTitle("Could not unmute!")
-					.addField("Could not unmute " + member.getAsMention(), "Reason: Because they were not muted in the first place!")
+					.addField("Could not unmute User!", member.getAsMention())
+					.addField("Reason", "because they were not muted in the first place")
 					.create(event.getAuthor());
 
 				event.getChannel().sendMessage(embed).queue();
@@ -101,7 +103,7 @@ public class UnmuteCommand implements TextCommand {
 	}
 
 	@Override
-	public String getName() {
+	public @NotNull String getName() {
 		return "unmute";
 	}
 

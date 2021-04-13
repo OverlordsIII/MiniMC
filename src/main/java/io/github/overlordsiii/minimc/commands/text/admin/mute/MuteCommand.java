@@ -6,11 +6,13 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import io.github.overlordsiii.minimc.Main;
 import io.github.overlordsiii.minimc.api.EmbedCreator;
 import io.github.overlordsiii.minimc.api.MutedEntry;
 import io.github.overlordsiii.minimc.api.command.TextCommand;
+import io.github.overlordsiii.minimc.config.JsonHandler;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.IMentionable;
@@ -19,10 +21,11 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import org.jetbrains.annotations.NotNull;
 
 public class MuteCommand implements TextCommand {
 	@Override
-	public String getName() {
+	public @NotNull String getName() {
 		return "mute";
 	}
 
@@ -71,11 +74,6 @@ public class MuteCommand implements TextCommand {
 		mutedRole.forEach(role -> mentionedUsers.forEach(member -> guild.addRoleToMember(member, role).queue()));
 
 
-
-		String mentions = mentionedUsers.stream()
-			.map(IMentionable::getAsMention)
-			.collect(Collectors.joining(", "));
-
 		String reason = "None";
 
 		if (content.contains("reason: ")) {
@@ -101,7 +99,8 @@ public class MuteCommand implements TextCommand {
 				.setColor(Color.CYAN)
 				.setUser(member.getUser())
 				.setTitle("Muted User")
-				.addField("Muted " + member.getAsMention(), "Reason: " + finalReason)
+				.addField("", member.getAsMention())
+				.addField("Reason", finalReason)
 				.create(event.getAuthor());
 
 

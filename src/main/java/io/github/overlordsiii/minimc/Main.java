@@ -4,14 +4,17 @@ import javax.security.auth.login.LoginException;
 
 import io.github.overlordsiii.minimc.api.command.CommandHandler;
 import io.github.overlordsiii.minimc.commands.join.AddDefaultRoleCommand;
+import io.github.overlordsiii.minimc.commands.text.admin.AnnounceCommand;
 import io.github.overlordsiii.minimc.commands.text.admin.clear.ClearUserCommand;
 import io.github.overlordsiii.minimc.commands.text.admin.kick.BanCommand;
 import io.github.overlordsiii.minimc.commands.text.admin.kick.KickCommand;
 import io.github.overlordsiii.minimc.commands.log.LogDeleteMessage;
 import io.github.overlordsiii.minimc.commands.text.admin.clear.ClearCommand;
+import io.github.overlordsiii.minimc.commands.text.admin.kick.UnbanCommand;
 import io.github.overlordsiii.minimc.commands.text.admin.mute.MuteCommand;
 import io.github.overlordsiii.minimc.commands.join.MuteOnJoinCommand;
 import io.github.overlordsiii.minimc.commands.text.admin.mute.UnmuteCommand;
+import io.github.overlordsiii.minimc.commands.text.admin.role.AddRoleCommand;
 import io.github.overlordsiii.minimc.commands.text.game.CreateCommand;
 import io.github.overlordsiii.minimc.commands.text.game.GameLinkCommand;
 import io.github.overlordsiii.minimc.commands.text.game.RocketReactionCommand;
@@ -46,11 +49,14 @@ public class Main {
 		.addTextCommand(new UnmuteCommand())
 		.addTextCommand(new KickCommand())
 		.addTextCommand(new BanCommand())
+		.addTextCommand(new UnbanCommand())
 		.addTextCommand(new ClearCommand())
 		.addTextCommand(new ClearUserCommand())
+		.addTextCommand(new AddRoleCommand())
 		.addTextCommand(new CreateCommand())
 		.addTextCommand(new GameLinkCommand())
 		.addTextCommand(new StartCommand())
+		.addTextCommand(new AnnounceCommand())
 		.addJoinCommand(new MuteOnJoinCommand())
 		.addJoinCommand(new AddDefaultRoleCommand())
 		.addMsgDeleteCommand(new LogDeleteMessage())
@@ -74,6 +80,7 @@ public class Main {
 		.addConfigOption("defaultRole", "Minecrafter")
 		.addConfigOption("modRole", "Moderator")
 		.addConfigOption("botLog", "bot-log")
+		.addConfigOption("announcementChannel", "announcements")
 		.build();
 
 
