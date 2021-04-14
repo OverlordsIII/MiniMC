@@ -30,7 +30,7 @@ public class CreateCommand implements TextCommand {
 				.addErrorEmbed()
 				.addField("Cannot Create Game", "Reason: You can't start a game if there is one already in progress")
 				.addLink(Main.currentGame.getMessage())
-				.addField("Game Author", Main.currentGame.getAuthor().getAsMention())
+				.mentionUser("Game Author", Main.currentGame.getAuthor())
 				.create(event.getAuthor());
 
 			message

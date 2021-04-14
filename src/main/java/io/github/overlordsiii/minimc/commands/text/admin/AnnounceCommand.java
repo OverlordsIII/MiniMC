@@ -27,7 +27,7 @@ public class AnnounceCommand implements TextCommand {
 			MessageEmbed embed = new EmbedCreator()
 				.setUser(event.getAuthor())
 				.setTitle("Admin Message!")
-				.addField("", messageContent)
+				.appendDescription(messageContent)
 				.create(event.getAuthor());
 
 			storeChannel.sendMessage(embed).queue();

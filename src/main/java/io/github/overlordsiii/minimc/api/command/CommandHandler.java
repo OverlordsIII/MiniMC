@@ -1,10 +1,8 @@
 package io.github.overlordsiii.minimc.api.command;
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -21,6 +19,7 @@ import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.events.message.MessageDeleteEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent;
+import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionRemoveEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
@@ -36,11 +35,14 @@ public class CommandHandler extends ListenerAdapter {
 
 	private final Set<BaseCommand<GuildMessageReactionAddEvent>> reactionCommands;
 
-	private CommandHandler(Set<TextCommand> commands, Set<BaseCommand<GuildMemberJoinEvent>> joinEvents, Set<BaseCommand<MessageDeleteEvent>> deleteCommands, Set<BaseCommand<GuildMessageReactionAddEvent>> reactionAddedCommands) {
+	private final Set<BaseCommand<GuildMessageReactionRemoveEvent>> reactionRemovedCommands;
+
+	private CommandHandler(Set<TextCommand> commands, Set<BaseCommand<GuildMemberJoinEvent>> joinEvents, Set<BaseCommand<MessageDeleteEvent>> deleteCommands, Set<BaseCommand<GuildMessageReactionAddEvent>> reactionAddedCommands, Set<BaseCommand<GuildMessageReactionRemoveEvent>> reactionRemoveCommands) {
 		this.textCommands = commands;
 		this.joinEvents = joinEvents;
 		this.deleteCommands = deleteCommands;
 		this.reactionCommands  = reactionAddedCommands;
+		this.reactionRemovedCommands = reactionRemoveCommands;
 	}
 
 	public static Builder builder() {
@@ -63,9 +65,9 @@ public class CommandHandler extends ListenerAdapter {
 
 			if (!command.getPredicate().test(event)) return;
 
-			String content = event.getMessage().getContentDisplay().toLowerCase(Locale.ROOT);
+			String content = event.getMessage().getContentDisplay() + " ";
 
-			if (content.trim().startsWith(command.getPrefix() + command.getName())) {
+			if (content.startsWith(command.getPrefix() + command.getName() + " ")) {
 
 				if (command.getNeededPermissions() != null && member != null && !member.hasPermission(command.getNeededPermissions())) {
 
@@ -80,7 +82,27 @@ public class CommandHandler extends ListenerAdapter {
 						return;
 				}
 
+				try {
+					command.execute(event);
+				} catch (Exception e) {
+					MessageEmbed embed = new EmbedCreator()
+						.addErrorEmbed()
+						.setUser(event.getAuthor())
+						.addField("Reason", e.getMessage())
+						.create(event.getAuthor());
 
+					e.printStackTrace();
+
+					event.getChannel().sendMessage(embed).queue();
+				}
+			}
+		});
+	}
+
+	@Override
+	public void onGuildMessageReactionRemove(@NotNull GuildMessageReactionRemoveEvent event) {
+		reactionRemovedCommands.forEach(command -> {
+			if (command.getPredicate().test(event)) {
 				command.execute(event);
 			}
 		});
@@ -136,10 +158,18 @@ public class CommandHandler extends ListenerAdapter {
 
 		private final Set<BaseCommand<GuildMessageReactionAddEvent>> reactionAddedCommands = new HashSet<>();
 
+		private final Set<BaseCommand<GuildMessageReactionRemoveEvent>> reactionRemoveCommands = new HashSet<>();
+
 		private Builder() {}
 
 		public Builder addTextCommand(TextCommand command) {
 			textCommands.add(command);
+
+			return this;
+		}
+
+		public Builder addReactionRemoveCommand(BaseCommand<GuildMessageReactionRemoveEvent> command) {
+			reactionRemoveCommands.add(command);
 
 			return this;
 		}
@@ -163,13 +193,13 @@ public class CommandHandler extends ListenerAdapter {
 		}
 
 		public CommandHandler build() {
-			return new CommandHandler(textCommands, joinCommands, deleteCommands, reactionAddedCommands);
+			return new CommandHandler(textCommands, joinCommands, deleteCommands, reactionAddedCommands, reactionRemoveCommands);
 		}
 
 	}
 
 	@Override
 	public void onReady(@NotNull ReadyEvent event) {
-		System.out.printf("Logged onto Minecrafter Society Bot on %s in %d servers", new Date().toString(), event.getJDA().getGuilds().size());
+		System.out.printf("Logged onto Minecrafter Society Bot on %s in %d servers", new Date(), event.getJDA().getGuilds().size());
 	}
 }

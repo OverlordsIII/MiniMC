@@ -19,7 +19,7 @@ public class BanCommand implements TextCommand {
 				.setColor(Color.CYAN)
 				.setUser(member.getUser())
 				.setTitle("Banned User")
-				.addField("Banned User", member.getAsMention())
+				.mentionUser("Banned User", member.getUser())
 				.create(event.getAuthor());
 
 			event.getChannel().sendMessage(embed).queue();

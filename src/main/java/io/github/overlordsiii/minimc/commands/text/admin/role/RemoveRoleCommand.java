@@ -32,7 +32,7 @@ public class RemoveRoleCommand implements TextCommand {
 				.setColor(Color.CYAN)
 				.setTitle("Removed Role")
 				.setUser(member.getUser())
-				.addField("User that roles were removed from", member.getAsMention())
+				.mentionUser("User that roles were removed from", member.getUser())
 				.addField("Roles Removed", builder.toString())
 				.create(event.getAuthor());
 

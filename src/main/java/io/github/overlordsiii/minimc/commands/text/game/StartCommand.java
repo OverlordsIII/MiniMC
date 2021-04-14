@@ -44,7 +44,7 @@ public class StartCommand implements TextCommand {
 				.addErrorEmbed()
 				.addField("Cannot Start Game!", "Reason: You cannot start the game since you are not the author!")
 				.addLink(Main.currentGame.getMessage())
-				.addField("Game Creator", Main.currentGame.getAuthor().getAsMention())
+				.mentionUser("Game Creator", Main.currentGame.getAuthor())
 				.create(event.getAuthor());
 
 
@@ -59,7 +59,7 @@ public class StartCommand implements TextCommand {
 				.addErrorEmbed()
 				.addField("Cannot Start Game!", "Reason: Cannot start game with only one person playing!")
 				.addLink(Main.currentGame.getMessage())
-				.addField("Game Creator", Main.currentGame.getAuthor().getAsMention())
+				.mentionUser("Game Creator", Main.currentGame.getAuthor())
 				.create(event.getAuthor());
 
 			message.reply(embed).queue();

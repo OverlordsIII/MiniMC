@@ -6,7 +6,6 @@ import io.github.overlordsiii.minimc.api.EmbedCreator;
 import io.github.overlordsiii.minimc.api.command.TextCommand;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -33,7 +32,7 @@ public class AddRoleCommand implements TextCommand {
 				.setColor(Color.CYAN)
 				.setTitle("Added Role")
 				.setUser(member.getUser())
-				.addField("User that roles were added to", member.getAsMention())
+				.mentionUser("User that roles were added to", member.getUser())
 				.addField("Roles added", builder.toString())
 				.create(event.getAuthor());
 

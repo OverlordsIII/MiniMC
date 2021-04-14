@@ -19,7 +19,7 @@ public class KickCommand implements TextCommand {
 				.setColor(Color.CYAN)
 				.setUser(member.getUser())
 				.setTitle("Kicked User")
-				.addField("Kicked User", member.getAsMention())
+				.mentionUser("Kicked User", member.getUser())
 				.create(event.getAuthor());
 
 			event.getChannel().sendMessage(embed).queue();

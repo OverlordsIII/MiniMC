@@ -3,7 +3,6 @@ package io.github.overlordsiii.minimc.commands.join;
 import java.awt.Color;
 import java.util.List;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.overlordsiii.minimc.Main;
 import io.github.overlordsiii.minimc.api.EmbedCreator;
@@ -12,7 +11,6 @@ import io.github.overlordsiii.minimc.api.command.BaseCommand;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 
 public class MuteOnJoinCommand implements BaseCommand<GuildMemberJoinEvent> {
@@ -39,6 +37,8 @@ public class MuteOnJoinCommand implements BaseCommand<GuildMemberJoinEvent> {
 
 			member.getUser().openPrivateChannel()
 				.queue(channel -> channel.sendMessage(embed).queue());
+
+			event.getGuild().getTextChannelsByName(Main.CONFIG.getConfigOption("botLog"), true).forEach(textChannel -> textChannel.sendMessage(embed).queue());
 
 			roles.forEach(role -> event.getGuild().addRoleToMember(member, role).queue());
 

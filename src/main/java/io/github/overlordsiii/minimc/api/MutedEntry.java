@@ -9,9 +9,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
-import io.github.overlordsiii.minimc.Main;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.User;
 
 public class MutedEntry implements JsonSerializer<MutedEntry>, JsonDeserializer<MutedEntry> {
 

@@ -19,7 +19,7 @@ public class UnbanCommand implements TextCommand {
 				.setColor(Color.CYAN)
 				.setUser(user)
 				.setTitle("Unbanned User")
-				.addField("Unbanned User", user.getAsMention())
+				.mentionUser("Unbanned User", user)
 				.create(event.getAuthor());
 
 			event.getChannel().sendMessage(embed).queue();

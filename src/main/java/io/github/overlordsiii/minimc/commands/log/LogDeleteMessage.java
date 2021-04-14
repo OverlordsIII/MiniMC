@@ -32,7 +32,7 @@ public class LogDeleteMessage implements BaseCommand<MessageDeleteEvent> {
 				.setUser(message.getAuthor())
 				.setColor(Color.CYAN)
 				.setTitle("A message was deleted!")
-				.addField("Who", message.getAuthor().getAsMention())
+				.mentionUser("Who", message.getAuthor()) //we are assuming here that the author of the message deleted it. Of course, we cannot find out who actually deleted the message, only the author
 				.addField("Where", "<#" + message.getChannel().getIdLong() + ">")
 				.addField("Content", message.getContentRaw())
 				.create();

@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.function.Function;
 
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
@@ -32,12 +31,26 @@ public class EmbedCreator {
 		return this;
 	}
 
+	public EmbedCreator setIcon(String url) {
+		this.builder
+			.setImage(url);
+
+		return this;
+	}
+
 	public EmbedCreator setUser(User user) {
 
 		if (user == null) return this;
 
 		this.builder
 			.setAuthor(user.getName(), user.getAvatarUrl(), user.getAvatarUrl());
+
+		return this;
+	}
+
+	public EmbedCreator appendDescription(String str) {
+		this.builder
+			.appendDescription(str);
 
 		return this;
 	}

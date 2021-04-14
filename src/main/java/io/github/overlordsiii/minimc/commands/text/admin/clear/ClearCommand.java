@@ -3,11 +3,7 @@ package io.github.overlordsiii.minimc.commands.text.admin.clear;
 import java.awt.Color;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Collections;
-import java.util.IdentityHashMap;
-import java.util.Set;
 
-import com.google.common.base.Throwables;
 import io.github.overlordsiii.minimc.api.EmbedCreator;
 import io.github.overlordsiii.minimc.api.command.TextCommand;
 import net.dv8tion.jda.api.Permission;

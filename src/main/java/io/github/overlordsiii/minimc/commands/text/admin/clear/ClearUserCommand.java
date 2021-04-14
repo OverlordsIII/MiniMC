@@ -1,20 +1,15 @@
 package io.github.overlordsiii.minimc.commands.text.admin.clear;
 
 import java.awt.Color;
-import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import com.google.common.collect.Lists;
 import io.github.overlordsiii.minimc.api.EmbedCreator;
 import io.github.overlordsiii.minimc.api.command.TextCommand;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
@@ -26,25 +21,22 @@ public class ClearUserCommand implements TextCommand {
 
 		Message message = event.getMessage();
 
-		MessageChannel channel = event.getChannel();
-
-		AtomicInteger msgsDelted = new AtomicInteger(0);
+		TextChannel channel = message.getTextChannel();
 
 		if (message.getMentionedMembers().isEmpty()) {
-			channel.sendMessage("You need to mention someone to clear messages from them").queue();
-			return;
+			throw new IllegalArgumentException("You need to mention someone to clear messages from them");
 		}
+		message.getMentionedMembers().forEach(member -> {
+			channel.getHistory().retrievePast(100)
+				.queue(messages -> {
 
-		message.getMentionedMembers().forEach(member -> channel.getIterableHistory()
-			.takeAsync(1000)
-			.thenApply(list -> list.stream()
-				.filter(message1 -> Objects.equals(message1.getMember(), member))
-				.collect(Collectors.toList()))
-			.thenApply(list -> Lists.partition(list, 100))
-			.thenAccept(lists -> lists.forEach(list -> {
-				msgsDelted.addAndGet(list.size());
-				channel.purgeMessages(list);
-			})).thenRun(() -> channel.sendMessage(getClearUserEmbed(msgsDelted.get(), member, event.getAuthor())).queue()));
+					messages = messages.stream()
+						.filter(message1 -> message1.getAuthor().equals(member.getUser()))
+						.collect(Collectors.toList());
+					channel.deleteMessages(messages).queue();
+					channel.sendMessage(getClearUserEmbed(messages.size(), member, event.getAuthor())).queue();
+				});
+		});
 
 
 	}
@@ -54,13 +46,13 @@ public class ClearUserCommand implements TextCommand {
 			.setUser(deletingFrom.getUser())
 			.setColor(Color.GREEN)
 			.setTitle("Deleted Messages")
-			.addField("Deleted " + numbers + " messages", "Messages deleted from " + deletingFrom.getAsMention())
+			.appendDescription( "Deleted " + numbers + " messages from " + deletingFrom.getAsMention())
 			.create(author);
 	}
 
 	@Override
 	public @NotNull String getName() {
-		return "userclear";
+		return "clearUser";
 	}
 
 	@Override

@@ -6,16 +6,13 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import io.github.overlordsiii.minimc.Main;
 import io.github.overlordsiii.minimc.api.EmbedCreator;
 import io.github.overlordsiii.minimc.api.MutedEntry;
 import io.github.overlordsiii.minimc.api.command.TextCommand;
-import io.github.overlordsiii.minimc.config.JsonHandler;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -99,7 +96,7 @@ public class MuteCommand implements TextCommand {
 				.setColor(Color.CYAN)
 				.setUser(member.getUser())
 				.setTitle("Muted User")
-				.addField("", member.getAsMention())
+				.mentionUser("User", member.getUser())
 				.addField("Reason", finalReason)
 				.create(event.getAuthor());
 

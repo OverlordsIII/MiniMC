@@ -3,18 +3,24 @@ package io.github.overlordsiii.minimc;
 import javax.security.auth.login.LoginException;
 
 import io.github.overlordsiii.minimc.api.command.CommandHandler;
+
 import io.github.overlordsiii.minimc.commands.join.AddDefaultRoleCommand;
+import io.github.overlordsiii.minimc.commands.join.MuteOnJoinCommand;
+import io.github.overlordsiii.minimc.commands.log.LogDeleteMessage;
 import io.github.overlordsiii.minimc.commands.text.admin.AnnounceCommand;
+import io.github.overlordsiii.minimc.commands.text.admin.clear.ClearCommand;
 import io.github.overlordsiii.minimc.commands.text.admin.clear.ClearUserCommand;
 import io.github.overlordsiii.minimc.commands.text.admin.kick.BanCommand;
 import io.github.overlordsiii.minimc.commands.text.admin.kick.KickCommand;
-import io.github.overlordsiii.minimc.commands.log.LogDeleteMessage;
-import io.github.overlordsiii.minimc.commands.text.admin.clear.ClearCommand;
 import io.github.overlordsiii.minimc.commands.text.admin.kick.UnbanCommand;
 import io.github.overlordsiii.minimc.commands.text.admin.mute.MuteCommand;
-import io.github.overlordsiii.minimc.commands.join.MuteOnJoinCommand;
 import io.github.overlordsiii.minimc.commands.text.admin.mute.UnmuteCommand;
 import io.github.overlordsiii.minimc.commands.text.admin.role.AddRoleCommand;
+import io.github.overlordsiii.minimc.commands.text.admin.role.autorole.CreateMessageCommand;
+import io.github.overlordsiii.minimc.commands.text.admin.role.autorole.EmoteAddedRoleCommand;
+import io.github.overlordsiii.minimc.commands.text.admin.role.autorole.EmoteRemoveRoleCommand;
+import io.github.overlordsiii.minimc.commands.text.admin.role.autorole.LinkCommand;
+import io.github.overlordsiii.minimc.commands.text.admin.role.autorole.UnlinkCommand;
 import io.github.overlordsiii.minimc.commands.text.game.CreateCommand;
 import io.github.overlordsiii.minimc.commands.text.game.GameLinkCommand;
 import io.github.overlordsiii.minimc.commands.text.game.RocketReactionCommand;
@@ -42,28 +48,36 @@ public class Main {
 		.build();
 
 	public static final CommandHandler COMMAND_HANDLER = CommandHandler.builder()
-		.addTextCommand(new StatusCommand())
-		.addTextCommand(new ActivityCommand())
-		.addTextCommand(new ActivityTypeCommand())
-		.addTextCommand(new MuteCommand())
-		.addTextCommand(new UnmuteCommand())
-		.addTextCommand(new KickCommand())
-		.addTextCommand(new BanCommand())
-		.addTextCommand(new UnbanCommand())
-		.addTextCommand(new ClearCommand())
-		.addTextCommand(new ClearUserCommand())
-		.addTextCommand(new AddRoleCommand())
+		.addTextCommand(new StatusCommand()) // change status of discord bot
+		.addTextCommand(new ActivityCommand()) // change the activity of discord bot
+		.addTextCommand(new ActivityTypeCommand()) // change the type of activity of the discord bot
+		.addTextCommand(new MuteCommand()) // mute a user
+		.addTextCommand(new UnmuteCommand()) // unmute a user
+		.addTextCommand(new KickCommand()) // kick a user
+		.addTextCommand(new BanCommand()) // ban a user
+		.addTextCommand(new UnbanCommand()) // unban a user
+		.addTextCommand(new ClearCommand()) // clear a certain amount of messages
+		.addTextCommand(new ClearUserCommand()) // clear messages from a user in the last 100 messages
+		.addTextCommand(new AddRoleCommand()) // adds a role to a user
+		.addTextCommand(new LinkCommand())
+		.addTextCommand(new UnlinkCommand())
+		.addTextCommand(new CreateMessageCommand())
 		.addTextCommand(new CreateCommand())
 		.addTextCommand(new GameLinkCommand())
 		.addTextCommand(new StartCommand())
-		.addTextCommand(new AnnounceCommand())
-		.addJoinCommand(new MuteOnJoinCommand())
-		.addJoinCommand(new AddDefaultRoleCommand())
-		.addMsgDeleteCommand(new LogDeleteMessage())
+		.addTextCommand(new AnnounceCommand()) // sends a message in the announcement category
+		.addJoinCommand(new MuteOnJoinCommand()) // mutes a user if they were muted by the bot
+		.addJoinCommand(new AddDefaultRoleCommand()) // adds a default role to a user if they joined the server
+		.addMsgDeleteCommand(new LogDeleteMessage()) // logs messages that are deleted
 		.addReactionCommand(new RocketReactionCommand())
+		.addReactionCommand(new EmoteAddedRoleCommand())
+		.addReactionRemoveCommand(new EmoteRemoveRoleCommand())
 		.build();
 
 	public static final JsonHandler MUTED_CONFIG = new JsonHandler("mutedMembers.json")
+		.initialize();
+
+	public static final JsonHandler EMOTE_TO_ROLE = new JsonHandler("emoteToRole.json")
 		.initialize();
 
 	public static JDA JDA;
@@ -80,6 +94,7 @@ public class Main {
 		.addConfigOption("defaultRole", "Minecrafter")
 		.addConfigOption("modRole", "Moderator")
 		.addConfigOption("botLog", "bot-log")
+		.addConfigOption("roleChannel", "select-roles")
 		.addConfigOption("announcementChannel", "announcements")
 		.build();
 
@@ -90,7 +105,7 @@ public class Main {
 			.setEventManager(new InterfacedEventManager())
 			.addEventListeners(COMMAND_HANDLER)
 			.setMemberCachePolicy(MemberCachePolicy.ALL)
-			.enableIntents(GatewayIntent.GUILD_MEMBERS)
+			.enableIntents(GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_EMOJIS)
 			.setActivity(Activity.of(CONFIG.getConfigOption("activityType", Activity.ActivityType::valueOf), CONFIG.getConfigOption("activity")))
 			.setStatus(CONFIG.getConfigOption("status", OnlineStatus::valueOf))
 			.build();

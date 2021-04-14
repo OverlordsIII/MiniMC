@@ -36,7 +36,7 @@ public class GameLinkCommand implements TextCommand {
 			.setUser(event.getAuthor())
 			.setTitle("Game Link")
 			.addLink(Main.currentGame.getMessage())
-			.addField("Game Creator", Main.currentGame.getAuthor().getAsMention())
+			.mentionUser("Game Creator", Main.currentGame.getAuthor())
 			.create(event.getAuthor());
 
 		event.getMessage().reply(embed).queue();
