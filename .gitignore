@@ -4,4 +4,3 @@ build
 mcs.properties
 mutedMembers.json
 /src/main/resources/token.properties
-MiniMCInJava.iml
