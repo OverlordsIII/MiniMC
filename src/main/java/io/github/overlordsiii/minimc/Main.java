@@ -101,7 +101,7 @@ public class Main {
 
 	public static void main(String[] args) throws LoginException {
 		JDA = JDABuilder
-			.createDefault(TOKEN.getConfigOption("token"))
+			.createDefault(System.getenv("token"))
 			.setEventManager(new InterfacedEventManager())
 			.addEventListeners(COMMAND_HANDLER)
 			.setMemberCachePolicy(MemberCachePolicy.ALL)
