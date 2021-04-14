@@ -44,4 +44,9 @@
       <url>https://m2.dv8tion.net/releases</url>
     </repository>
   </repositories>
+add  <properties>
+    <java.version>1.8</java.version>
+    <maven.compiler.source>${java.version}</maven.compiler.source>
+    <maven.compiler.target>${java.version}</maven.compiler.target>
+  </properties>
 </project>
