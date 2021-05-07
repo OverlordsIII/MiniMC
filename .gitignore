@@ -6,3 +6,4 @@ mutedMembers.json
 guild.properties
 emoteToRole.json
 /src/main/resources/token.properties
+/src/main/resources/apikey.properties

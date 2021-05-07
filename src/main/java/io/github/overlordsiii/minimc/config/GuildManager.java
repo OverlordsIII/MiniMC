@@ -40,7 +40,7 @@ public class GuildManager {
 			addGuildProperties(guild);
 			addMutedConfig(guild);
 			addEmoteConfig(guild);
-			addMessageConfig(guild);
+			//addMessageConfig(guild);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

@@ -51,6 +51,12 @@ public class Start {
 		.addConfigOption("token", "")
 		.build();
 
+	private static final PropertiesHandler API_KEY = PropertiesHandler.builder()
+		.setFileName("apikey.properties")
+		.setComment("This file sets the api key for hypixel operations")
+		.addConfigOption("apiKey", "")
+		.build();
+
 	public static final CommandHandler COMMAND_HANDLER = CommandHandler.builder()
 		.addTextCommand(new StatusCommand()) // change status of discord bot
 		.addTextCommand(new ActivityCommand()) // change the activity of discord bot
