@@ -3,7 +3,7 @@ package io.github.overlordsiii.minimc.commands.text.status;
 import java.io.IOException;
 import java.util.Locale;
 
-import io.github.overlordsiii.minimc.Main;
+import io.github.overlordsiii.minimc.Start;
 import io.github.overlordsiii.minimc.api.command.TextCommand;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.Permission;
@@ -23,7 +23,7 @@ public class StatusCommand implements TextCommand {
 
 		String status = event.getMessage().getContentRaw().trim().substring(command.length()).toLowerCase(Locale.ROOT).trim();
 
-		Presence presence = Main.JDA.getPresence();
+		Presence presence = Start.JDA.getPresence();
 		if (status.contains("online") || status.contains(":online:")) {
 			presence.setStatus(OnlineStatus.ONLINE);
 			event.getChannel().sendMessage("Set status to online").queue();
@@ -40,10 +40,10 @@ public class StatusCommand implements TextCommand {
 			event.getChannel().sendMessage("Could not find the status you were looking for!").queue();
 		}
 
-		Main.CONFIG.setConfigOption("status", presence.getStatus().toString());
+		Start.CONFIG.setConfigOption("status", presence.getStatus().toString());
 
 		try {
-			Main.CONFIG.save();
+			Start.CONFIG.save();
 		} catch (IOException e) {
 			throw new RuntimeException("Could not save config!", e);
 		}

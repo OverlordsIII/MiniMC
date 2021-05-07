@@ -7,14 +7,18 @@ import java.util.List;
 import java.util.Objects;
 
 import com.google.gson.JsonObject;
-import io.github.overlordsiii.minimc.Main;
+import io.github.overlordsiii.minimc.Start;
 import io.github.overlordsiii.minimc.api.EmbedCreator;
 import io.github.overlordsiii.minimc.api.command.TextCommand;
+import io.github.overlordsiii.minimc.config.JsonHandler;
+import io.github.overlordsiii.minimc.config.PropertiesHandler;
 import net.dv8tion.jda.api.entities.Emote;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.internal.utils.Helpers;
@@ -34,16 +38,25 @@ public class CreateMessageCommand implements TextCommand {
 
 		User user = event.getAuthor();
 
-		JsonObject object = Main.EMOTE_TO_ROLE.getObj();
+		JsonHandler jsonHandler = Start.GUILD_MANAGER.getEmoteConfig().get(event.getGuild());
+
+		MessageEmbed test = new EmbedCreator()
+			.setUser(event.getAuthor())
+			.setTitle("Created role selection!")
+			.create(event.getAuthor());
+
+		event.getChannel().sendMessage(test).queue();
+
+		JsonObject object = jsonHandler.getObj();
 
 		EmbedCreator creator = new EmbedCreator()
 			.setTitle("Role Selector")
 			.setColor(Color.CYAN)
-			.setUser(Main.JDA.getSelfUser());
+			.setUser(Start.JDA.getSelfUser());
 
+		PropertiesHandler handler = Start.GUILD_MANAGER.getGuildProperties().get(event.getGuild());
 
-
-		guild.getTextChannelsByName(Main.CONFIG.getConfigOption("roleChannel"), true).forEach(textChannel -> {
+		TextChannel textChannel = event.getGuild().getTextChannelById(handler.getConfigOption("roleChannel"));
 
 			List<Emote> emotes = new ArrayList<>();
 
@@ -78,18 +91,18 @@ public class CreateMessageCommand implements TextCommand {
 
 					object.remove("messageId");
 				}
-				Main.EMOTE_TO_ROLE.getObj().addProperty("messageId", messager.getIdLong());
+				jsonHandler.getObj().addProperty("messageId", messager.getIdLong());
 
 				emotes.forEach(emote -> messager.addReaction(emote).queue());
 
 				try {
-					Main.EMOTE_TO_ROLE.save();
+					jsonHandler.save();
 				} catch (IOException e) {
 					throw new RuntimeException(e);
 				}
 
 			});
-		});
+
 	}
 
 	private static void addRoleAndEmoji(EmbedCreator creator, Emote emote, Role role) {

@@ -8,7 +8,9 @@ import java.util.Set;
 
 import javax.annotation.Nonnull;
 
+import io.github.overlordsiii.minimc.Start;
 import io.github.overlordsiii.minimc.api.EmbedCreator;
+import io.github.overlordsiii.minimc.commands.text.fun.MentionMeIMentionYou;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
@@ -18,6 +20,7 @@ import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.events.message.MessageDeleteEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent;
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionRemoveEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -49,12 +52,19 @@ public class CommandHandler extends ListenerAdapter {
 		return new Builder();
 	}
 
+	@Override
+	public void onGuildMessageReceived(@NotNull GuildMessageReceivedEvent event) {
+		new MentionMeIMentionYou().execute(event);
+	}
+
 	public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
 
 		if (event.getAuthor().isBot()) return;
 
-		sentMessages.put(event.getMessageId(), event.getMessage());
 
+
+		sentMessages.put(event.getMessageId(), event.getMessage());
+		
 		Guild guild = event.getGuild();
 
 		User author = event.getAuthor();
@@ -76,7 +86,7 @@ public class CommandHandler extends ListenerAdapter {
 					MessageEmbed embed = creator
 						.addErrorEmbed()
 						.setUser(event.getAuthor())
-						.addValuesAsField("Cannot execute command \"" + command.getName() +"\"", Enum::toString, command.getNeededPermissions())
+						.addValuesAsField("Cannot execute command \"" + command.getName() +"\"" + " because you do not have the following permissions!", Enum::toString, command.getNeededPermissions())
 						.create(event.getAuthor());
 						event.getChannel().sendMessage(embed).queue();
 						return;
@@ -92,6 +102,9 @@ public class CommandHandler extends ListenerAdapter {
 						.create(event.getAuthor());
 
 					e.printStackTrace();
+					if (!(e instanceof IllegalArgumentException) && !(e instanceof IllegalStateException)) {
+						e.printStackTrace();
+					}
 
 					event.getChannel().sendMessage(embed).queue();
 				}
@@ -201,5 +214,7 @@ public class CommandHandler extends ListenerAdapter {
 	@Override
 	public void onReady(@NotNull ReadyEvent event) {
 		System.out.printf("Logged onto Minecrafter Society Bot on %s in %d servers", new Date(), event.getJDA().getGuilds().size());
+
+		event.getJDA().getGuilds().forEach(Start.GUILD_MANAGER::addGuild);
 	}
 }

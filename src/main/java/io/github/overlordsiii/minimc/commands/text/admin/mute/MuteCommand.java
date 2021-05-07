@@ -7,10 +7,12 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 
 import com.google.gson.JsonObject;
-import io.github.overlordsiii.minimc.Main;
+import io.github.overlordsiii.minimc.Start;
 import io.github.overlordsiii.minimc.api.EmbedCreator;
 import io.github.overlordsiii.minimc.api.MutedEntry;
 import io.github.overlordsiii.minimc.api.command.TextCommand;
+import io.github.overlordsiii.minimc.config.JsonHandler;
+import io.github.overlordsiii.minimc.config.PropertiesHandler;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -33,16 +35,18 @@ public class MuteCommand implements TextCommand {
 
 		Guild guild = event.getGuild();
 
+		PropertiesHandler handler = Start.GUILD_MANAGER.getGuildProperties().get(event.getGuild());
+
 		String content = message.getContentDisplay().toLowerCase(Locale.ROOT);
 
-		List<Role> mutedRole = guild.getRolesByName(Main.CONFIG.getConfigOption("mutedRole"), true);
+		List<Role> mutedRole = guild.getRolesByName(handler.getConfigOption("mutedRole"), true);
 
 		List<Member> mentionedUsers = message.getMentionedMembers();
 
 		boolean containsMiniMC = mentionedUsers.stream()
 			.map(Member::getUser)
 			.collect(Collectors.toList())
-			.contains(Main.JDA.getSelfUser());
+			.contains(Start.JDA.getSelfUser());
 
 		if (containsMiniMC) {
 
@@ -83,10 +87,13 @@ public class MuteCommand implements TextCommand {
 			MutedEntry entry = new MutedEntry(member.getUser().getIdLong(), finalReason, event.getAuthor().getIdLong());
 
 			JsonObject object = entry.serialize().getAsJsonObject();
-			Main.MUTED_CONFIG.getObj().add(member.getId(), object);
+
+			JsonHandler jsonHandler = Start.GUILD_MANAGER.getMutedGuildConfig().get(event.getGuild());
+
+			jsonHandler.getObj().add(member.getId(), object);
 
 			try {
-				Main.MUTED_CONFIG.save();
+				jsonHandler.save();
 			} catch (IOException e) {
 				e.printStackTrace();
 				return;

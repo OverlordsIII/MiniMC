@@ -3,4 +3,6 @@
 build
 mcs.properties
 mutedMembers.json
+guild.properties
+emoteToRole.json
 /src/main/resources/token.properties

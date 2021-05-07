@@ -3,7 +3,7 @@ package io.github.overlordsiii.minimc.commands.text.game;
 
 import java.awt.Color;
 
-import io.github.overlordsiii.minimc.Main;
+import io.github.overlordsiii.minimc.Start;
 import io.github.overlordsiii.minimc.api.EmbedCreator;
 import io.github.overlordsiii.minimc.api.command.TextCommand;
 import net.dv8tion.jda.api.entities.Message;
@@ -19,7 +19,7 @@ public class GameLinkCommand implements TextCommand {
 		Message message = event.getMessage();
 		String content = message.getContentRaw();
 
-		if (Main.currentGame == null) {
+		if (Start.currentGame == null) {
 
 			MessageEmbed embed = new EmbedCreator()
 				.addErrorEmbed()
@@ -35,8 +35,8 @@ public class GameLinkCommand implements TextCommand {
 			.setColor(Color.ORANGE)
 			.setUser(event.getAuthor())
 			.setTitle("Game Link")
-			.addLink(Main.currentGame.getMessage())
-			.mentionUser("Game Creator", Main.currentGame.getAuthor())
+			.addLink(Start.currentGame.getMessage())
+			.mentionUser("Game Creator", Start.currentGame.getAuthor())
 			.create(event.getAuthor());
 
 		event.getMessage().reply(embed).queue();

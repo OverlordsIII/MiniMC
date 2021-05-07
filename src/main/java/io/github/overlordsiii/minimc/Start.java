@@ -6,6 +6,7 @@ import io.github.overlordsiii.minimc.api.command.CommandHandler;
 
 import io.github.overlordsiii.minimc.commands.join.AddDefaultRoleCommand;
 import io.github.overlordsiii.minimc.commands.join.MuteOnJoinCommand;
+import io.github.overlordsiii.minimc.commands.join.WelcomeMessageCommand;
 import io.github.overlordsiii.minimc.commands.log.LogDeleteMessage;
 import io.github.overlordsiii.minimc.commands.text.admin.AnnounceCommand;
 import io.github.overlordsiii.minimc.commands.text.admin.clear.ClearCommand;
@@ -21,6 +22,9 @@ import io.github.overlordsiii.minimc.commands.text.admin.role.autorole.EmoteAdde
 import io.github.overlordsiii.minimc.commands.text.admin.role.autorole.EmoteRemoveRoleCommand;
 import io.github.overlordsiii.minimc.commands.text.admin.role.autorole.LinkCommand;
 import io.github.overlordsiii.minimc.commands.text.admin.role.autorole.UnlinkCommand;
+import io.github.overlordsiii.minimc.commands.text.admin.vc.VCMuteCommand;
+import io.github.overlordsiii.minimc.commands.text.admin.vc.VCUnmuteCommand;
+import io.github.overlordsiii.minimc.commands.text.fun.RandomChooseCommand;
 import io.github.overlordsiii.minimc.commands.text.game.CreateCommand;
 import io.github.overlordsiii.minimc.commands.text.game.GameLinkCommand;
 import io.github.overlordsiii.minimc.commands.text.game.RocketReactionCommand;
@@ -28,7 +32,7 @@ import io.github.overlordsiii.minimc.commands.text.game.StartCommand;
 import io.github.overlordsiii.minimc.commands.text.status.ActivityCommand;
 import io.github.overlordsiii.minimc.commands.text.status.ActivityTypeCommand;
 import io.github.overlordsiii.minimc.commands.text.status.StatusCommand;
-import io.github.overlordsiii.minimc.config.JsonHandler;
+import io.github.overlordsiii.minimc.config.GuildManager;
 import io.github.overlordsiii.minimc.config.PropertiesHandler;
 import io.github.overlordsiii.minimc.api.AmongUsGame;
 import net.dv8tion.jda.api.JDA;
@@ -39,7 +43,7 @@ import net.dv8tion.jda.api.hooks.InterfacedEventManager;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 
-public class Main {
+public class Start {
 
 	private static final PropertiesHandler TOKEN = PropertiesHandler.builder()
 		.setFileName("token.properties")
@@ -65,6 +69,9 @@ public class Main {
 		.addTextCommand(new CreateCommand())
 		.addTextCommand(new GameLinkCommand())
 		.addTextCommand(new StartCommand())
+		.addTextCommand(new VCMuteCommand())
+		.addTextCommand(new VCUnmuteCommand())
+		.addTextCommand(new RandomChooseCommand())
 		.addTextCommand(new AnnounceCommand()) // sends a message in the announcement category
 		.addJoinCommand(new MuteOnJoinCommand()) // mutes a user if they were muted by the bot
 		.addJoinCommand(new AddDefaultRoleCommand()) // adds a default role to a user if they joined the server
@@ -72,15 +79,12 @@ public class Main {
 		.addReactionCommand(new RocketReactionCommand())
 		.addReactionCommand(new EmoteAddedRoleCommand())
 		.addReactionRemoveCommand(new EmoteRemoveRoleCommand())
+		.addJoinCommand(new WelcomeMessageCommand())
 		.build();
 
-	public static final JsonHandler MUTED_CONFIG = new JsonHandler("mutedMembers.json")
-		.initialize();
-
-	public static final JsonHandler EMOTE_TO_ROLE = new JsonHandler("emoteToRole.json")
-		.initialize();
-
 	public static JDA JDA;
+
+	public static final GuildManager GUILD_MANAGER = new GuildManager();
 
 	public static AmongUsGame currentGame;
 
@@ -90,12 +94,6 @@ public class Main {
 		.addConfigOption("status", OnlineStatus.ONLINE.toString())
 		.addConfigOption("activityType", Activity.ActivityType.DEFAULT.toString())
 		.addConfigOption("activity", "KING OF DND")
-		.addConfigOption("mutedRole", "Muted")
-		.addConfigOption("defaultRole", "Minecrafter")
-		.addConfigOption("modRole", "Moderator")
-		.addConfigOption("botLog", "bot-log")
-		.addConfigOption("roleChannel", "select-roles")
-		.addConfigOption("announcementChannel", "announcements")
 		.build();
 
 
@@ -105,7 +103,7 @@ public class Main {
 			.setEventManager(new InterfacedEventManager())
 			.addEventListeners(COMMAND_HANDLER)
 			.setMemberCachePolicy(MemberCachePolicy.ALL)
-			.enableIntents(GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_EMOJIS)
+			.enableIntents(GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_EMOJIS, GatewayIntent.GUILD_VOICE_STATES)
 			.setActivity(Activity.of(CONFIG.getConfigOption("activityType", Activity.ActivityType::valueOf), CONFIG.getConfigOption("activity")))
 			.setStatus(CONFIG.getConfigOption("status", OnlineStatus::valueOf))
 			.build();

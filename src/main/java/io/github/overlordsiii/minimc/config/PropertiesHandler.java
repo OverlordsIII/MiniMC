@@ -19,9 +19,13 @@ public class PropertiesHandler {
 	private final String comment;
 
 	private PropertiesHandler(String filename, Map<String, String> configValues, String comment) {
-		this.propertiesPath = Paths.get("src", "main", "resources").resolve(filename);
-		this.configValues = configValues;
+		this(Paths.get("src", "main", "resources").resolve(filename), configValues, comment);
+	}
+
+	private PropertiesHandler(Path propertiesPath, Map<String, String> configValues, String comment) {
+		this.propertiesPath = propertiesPath;
 		this.comment = comment;
+		this.configValues = configValues;
 	}
 
 	public void initialize() {
@@ -83,6 +87,7 @@ public class PropertiesHandler {
 		private final Map<String, String> configValues = new HashMap<>();
 		private String filename;
 		private String comment;
+		private Path propertiesPath;
 
 		private Builder() {}
 
@@ -102,6 +107,12 @@ public class PropertiesHandler {
 			return this;
 		}
 
+		public Builder setPath(Path propertiesPath) {
+			this.propertiesPath = propertiesPath;
+
+			return this;
+		}
+
 		public PropertiesHandler build() {
 
 			Objects.requireNonNull(filename, "Must set filename before building PropertiesHandler!");
@@ -110,6 +121,17 @@ public class PropertiesHandler {
 			PropertiesHandler propertiesHandler = new PropertiesHandler(filename, configValues, comment);
 			propertiesHandler.initialize();
 			return propertiesHandler;
+		}
+
+		public PropertiesHandler buildPath() {
+			Objects.requireNonNull(comment, "Must set comments needed before building PropertiesHandler!");
+			Objects.requireNonNull(propertiesPath, "Must set path before building PropertiesHandler!");
+
+			PropertiesHandler propertiesHandle = new PropertiesHandler(propertiesPath, configValues, comment);
+
+			propertiesHandle.initialize();
+
+			return propertiesHandle;
 		}
 	}
 

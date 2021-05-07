@@ -22,7 +22,11 @@ public class JsonHandler {
 			.create();
 
 	public JsonHandler(String fileName) {
-		this.propertiesPath = Paths.get("src", "main", "resources").resolve(fileName);
+		this(Paths.get("src", "main", "resources").resolve(fileName));
+	}
+
+	public JsonHandler(Path path) {
+		this.propertiesPath = path;
 	}
 
 	public JsonHandler initialize() {
@@ -30,7 +34,7 @@ public class JsonHandler {
 			load();
 			save();
 		} catch (IOException e) {
-			throw new RuntimeException("Could not load config files for json handler: " + propertiesPath.getFileName());
+			throw new RuntimeException("Could not load config files for json handler: " + propertiesPath.getFileName(), e);
 		}
 
 		return this;

@@ -4,9 +4,10 @@ import java.awt.Color;
 import java.io.IOException;
 import java.util.List;
 
-import io.github.overlordsiii.minimc.Main;
+import io.github.overlordsiii.minimc.Start;
 import io.github.overlordsiii.minimc.api.EmbedCreator;
 import io.github.overlordsiii.minimc.api.command.TextCommand;
+import io.github.overlordsiii.minimc.config.JsonHandler;
 import net.dv8tion.jda.api.entities.Emote;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -32,6 +33,8 @@ public class LinkCommand implements TextCommand {
 
 		List<Role> roles = message.getMentionedRoles();
 
+		JsonHandler handler = Start.GUILD_MANAGER.getEmoteConfig().get(event.getGuild());
+
 		if (roles.size() != 1) {
 			throw new IllegalArgumentException("You cannot link multiple roles to an emoji! Please mention only one role and one emoji in your `!link` command");
 		}
@@ -44,10 +47,10 @@ public class LinkCommand implements TextCommand {
 
 		Role role = roles.get(0);
 
-		Main.EMOTE_TO_ROLE.getObj().addProperty(Long.toString(emote.getIdLong()), role.getIdLong());
+		handler.getObj().addProperty(Long.toString(emote.getIdLong()), role.getIdLong());
 
 		try {
-			Main.EMOTE_TO_ROLE.save();
+			handler.save();
 		} catch (IOException e) {
 			e.printStackTrace();
 			throw new RuntimeException("Could not save emote config!\nReason: " + e);

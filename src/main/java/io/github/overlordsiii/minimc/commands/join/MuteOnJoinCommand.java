@@ -4,44 +4,49 @@ import java.awt.Color;
 import java.util.List;
 
 import com.google.gson.JsonObject;
-import io.github.overlordsiii.minimc.Main;
+import io.github.overlordsiii.minimc.Start;
 import io.github.overlordsiii.minimc.api.EmbedCreator;
 import io.github.overlordsiii.minimc.api.MutedEntry;
 import io.github.overlordsiii.minimc.api.command.BaseCommand;
+import io.github.overlordsiii.minimc.config.PropertiesHandler;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 
 public class MuteOnJoinCommand implements BaseCommand<GuildMemberJoinEvent> {
 	@Override
 	public void execute(GuildMemberJoinEvent event) {
 
-		JsonObject object = Main.MUTED_CONFIG.getObj();
+		JsonObject object = Start.GUILD_MANAGER.getMutedGuildConfig().get(event.getGuild()).getObj();
 
 		Member member = event.getMember();
 
-		List<Role> roles = event.getGuild().getRolesByName(Main.CONFIG.getConfigOption("Muted"), true);
+		PropertiesHandler handler = Start.GUILD_MANAGER.getGuildProperties().get(event.getGuild());
+
+		Role roles = event.getGuild().getRoleById(handler.getConfigOption("mutedRole"));
 
 		if (object.has(Long.toString(member.getIdLong()))) {
 			JsonObject element = object.get(Long.toString(member.getIdLong())).getAsJsonObject();
 
 			MutedEntry entry = MutedEntry.deserialize(element);
 
-			MessageEmbed embed = new EmbedCreator()
+			EmbedCreator embed = new EmbedCreator()
 				.setTitle("You Were Muted!")
 				.setColor(Color.RED)
 				.addField("Muted By Moderator", "Muted by " + idToMention(entry.getModerator()))
-				.addField("Reason", entry.getReason())
-				.create();
+				.addField("Reason", entry.getReason());
 
 			member.getUser().openPrivateChannel()
-				.queue(channel -> channel.sendMessage(embed).queue());
+				.queue(channel -> channel.sendMessage(embed.create(event.getGuild().getMemberById(entry.getModerator()))).queue());
 
-			event.getGuild().getTextChannelsByName(Main.CONFIG.getConfigOption("botLog"), true).forEach(textChannel -> textChannel.sendMessage(embed).queue());
+			TextChannel textChannel = event.getGuild().getTextChannelById(handler.getConfigOption("botLog"));
 
-			roles.forEach(role -> event.getGuild().addRoleToMember(member, role).queue());
+			textChannel.sendMessage(embed.setTitle("Member was auto-muted").create(event.getGuild().getMemberById(entry.getModerator()))).queue();
 
+			//roles.forEach(role -> event.getGuild().addRoleToMember(member, role).queue());
+			assert roles != null;
+			event.getGuild().addRoleToMember(member, roles).queue();
 
 		}
 	}

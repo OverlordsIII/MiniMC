@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.Locale;
 import java.util.Objects;
 
-import io.github.overlordsiii.minimc.Main;
+import io.github.overlordsiii.minimc.Start;
 import io.github.overlordsiii.minimc.api.command.TextCommand;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Activity;
@@ -24,9 +24,9 @@ public class ActivityTypeCommand implements TextCommand {
 
 		String status = event.getMessage().getContentRaw().trim().substring(command.length()).toLowerCase(Locale.ROOT).trim();
 
-		Presence presence = Main.JDA.getPresence();
+		Presence presence = Start.JDA.getPresence();
 
-		String currentStatus = Main.CONFIG.getConfigOption("status");
+		String currentStatus = Start.CONFIG.getConfigOption("status");
 
 		if (status.contains("playing") || status.contains("default")) {
 			presence.setActivity(Activity.of(Activity.ActivityType.DEFAULT, currentStatus));
@@ -40,10 +40,10 @@ public class ActivityTypeCommand implements TextCommand {
 
 		event.getChannel().sendMessage("Set activity type to \"" + Objects.requireNonNull(presence.getActivity()).getType().toString() + "\"").queue();
 
-		Main.CONFIG.setConfigOption("activityType", Objects.requireNonNull(presence.getActivity()).getType().toString());
+		Start.CONFIG.setConfigOption("activityType", Objects.requireNonNull(presence.getActivity()).getType().toString());
 
 		try {
-			Main.CONFIG.save();
+			Start.CONFIG.save();
 		} catch (IOException e) {
 			throw new RuntimeException("Could not save config!", e);
 		}

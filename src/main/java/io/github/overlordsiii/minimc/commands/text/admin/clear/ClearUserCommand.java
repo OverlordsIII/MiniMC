@@ -1,6 +1,7 @@
 package io.github.overlordsiii.minimc.commands.text.admin.clear;
 
 import java.awt.Color;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import io.github.overlordsiii.minimc.api.EmbedCreator;
@@ -34,7 +35,7 @@ public class ClearUserCommand implements TextCommand {
 						.filter(message1 -> message1.getAuthor().equals(member.getUser()))
 						.collect(Collectors.toList());
 					channel.deleteMessages(messages).queue();
-					channel.sendMessage(getClearUserEmbed(messages.size(), member, event.getAuthor())).queue();
+					channel.sendMessage(getClearUserEmbed(messages.size(), member, event.getAuthor())).queue(message1 -> message1.delete().queueAfter(1, TimeUnit.MINUTES));
 				});
 		});
 

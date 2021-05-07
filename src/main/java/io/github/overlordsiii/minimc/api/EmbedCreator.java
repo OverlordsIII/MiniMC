@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.function.Function;
 
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
@@ -117,7 +118,7 @@ public class EmbedCreator {
 		if (message == null) return this;
 
 		this.builder
-			.addField("Message link!", "[Jump!](" + AmongUsGame.getMessageLink(message) + ")", false);
+			.addField("Message link!", "[Jump!](" + message.getJumpUrl() + ")", false);
 
 		return this;
 	}
@@ -153,6 +154,14 @@ public class EmbedCreator {
 
 
 		return this.builder.build();
+	}
+
+	public MessageEmbed create(Member invoker) {
+		if (invoker == null) {
+			return create();
+		}
+
+		return create(invoker.getUser());
 	}
 
 	public EmbedBuilder getAsBuilder() {

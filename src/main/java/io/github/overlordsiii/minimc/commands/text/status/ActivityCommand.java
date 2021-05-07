@@ -2,7 +2,7 @@ package io.github.overlordsiii.minimc.commands.text.status;
 
 import java.io.IOException;
 
-import io.github.overlordsiii.minimc.Main;
+import io.github.overlordsiii.minimc.Start;
 import io.github.overlordsiii.minimc.api.command.TextCommand;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Activity;
@@ -22,16 +22,16 @@ public class ActivityCommand implements TextCommand {
 
 		String status = event.getMessage().getContentRaw().trim().substring(command.length()).trim();
 
-		Presence presence = Main.JDA.getPresence();
+		Presence presence = Start.JDA.getPresence();
 
-		presence.setActivity(Activity.of(Main.CONFIG.getConfigOption("activityType", Activity.ActivityType::valueOf), status));
+		presence.setActivity(Activity.of(Start.CONFIG.getConfigOption("activityType", Activity.ActivityType::valueOf), status));
 
 		event.getChannel().sendMessage("Set activity to \"" + status + "\"").queue();
 
-		Main.CONFIG.setConfigOption("activity", status);
+		Start.CONFIG.setConfigOption("activity", status);
 
 		try {
-			Main.CONFIG.save();
+			Start.CONFIG.save();
 		} catch (IOException e) {
 			throw new RuntimeException("Could not save config!", e);
 		}

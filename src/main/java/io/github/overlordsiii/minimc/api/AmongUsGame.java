@@ -46,7 +46,4 @@ public class AmongUsGame {
 		return author;
 	}
 
-	public static String getMessageLink(Message message) {
-		return "https://discord.com/channels/" + message.getGuild().getIdLong() + "/" + message.getChannel().getIdLong() + "/" + message.getIdLong();
-	}
 }

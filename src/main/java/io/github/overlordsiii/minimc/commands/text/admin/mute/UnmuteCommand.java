@@ -6,9 +6,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
-import io.github.overlordsiii.minimc.Main;
+import io.github.overlordsiii.minimc.Start;
 import io.github.overlordsiii.minimc.api.EmbedCreator;
 import io.github.overlordsiii.minimc.api.command.TextCommand;
+import io.github.overlordsiii.minimc.config.JsonHandler;
+import io.github.overlordsiii.minimc.config.PropertiesHandler;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -25,16 +27,20 @@ public class UnmuteCommand implements TextCommand {
 
 		Guild guild = event.getGuild();
 
+		PropertiesHandler handler = Start.GUILD_MANAGER.getGuildProperties().get(event.getGuild());
+
+		JsonHandler jsonHandler = Start.GUILD_MANAGER.getMutedGuildConfig().get(event.getGuild());
+
 		String content = message.getContentDisplay().toLowerCase(Locale.ROOT);
 
-		List<Role> mutedRole = guild.getRolesByName(Main.CONFIG.getConfigOption("mutedRole"), true);
+		List<Role> mutedRole = guild.getRolesByName(handler.getConfigOption("mutedRole"), true);
 
 		List<Member> mentionedUsers = message.getMentionedMembers();
 
 		boolean containsMiniMC = mentionedUsers.stream()
 			.map(Member::getUser)
 			.collect(Collectors.toList())
-			.contains(Main.JDA.getSelfUser());
+			.contains(Start.JDA.getSelfUser());
 
 		if (containsMiniMC) {
 
@@ -60,13 +66,23 @@ public class UnmuteCommand implements TextCommand {
 			return;
 		}
 
-		mutedRole.forEach(role -> mentionedUsers.forEach(member -> guild.removeRoleFromMember(member, role).queue()));
+		for (Role role : mutedRole) {
+			for (Member mentionedUser : mentionedUsers) {
+				if (!guild.getMembersWithRoles(role).contains(mentionedUser)) {
+					throw new IllegalStateException("Could not unmute " + mentionedUser.getAsMention() + "because they did not have " + role.getAsMention() + " role");
+				}
+			}
+		}
+
+		mutedRole.forEach(role -> mentionedUsers.forEach(member -> {
+			guild.removeRoleFromMember(member, role).queue();
+		}));
 
 		mentionedUsers.forEach(member -> {
 			String id = Long.toString(member.getIdLong());
 
-			if (Main.MUTED_CONFIG.getObj().has(id)) {
-				Main.MUTED_CONFIG.getObj().remove(id);
+			if (jsonHandler.getObj().has(id)) {
+				jsonHandler.getObj().remove(id);
 
 				MessageEmbed embed = new EmbedCreator()
 					.setColor(Color.CYAN)
@@ -93,7 +109,7 @@ public class UnmuteCommand implements TextCommand {
 		});
 
 		try {
-			Main.MUTED_CONFIG.save();
+			jsonHandler.save();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

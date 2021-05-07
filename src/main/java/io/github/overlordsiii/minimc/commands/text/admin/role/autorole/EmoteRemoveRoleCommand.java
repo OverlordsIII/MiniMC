@@ -2,36 +2,39 @@ package io.github.overlordsiii.minimc.commands.text.admin.role.autorole;
 
 import java.awt.Color;
 
-import io.github.overlordsiii.minimc.Main;
+import io.github.overlordsiii.minimc.Start;
 import io.github.overlordsiii.minimc.api.EmbedCreator;
 import io.github.overlordsiii.minimc.api.command.BaseCommand;
-import io.github.overlordsiii.minimc.api.command.TextCommand;
+import io.github.overlordsiii.minimc.config.JsonHandler;
+import io.github.overlordsiii.minimc.config.PropertiesHandler;
 import net.dv8tion.jda.api.entities.Emote;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionRemoveEmoteEvent;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionRemoveEvent;
-import org.jetbrains.annotations.NotNull;
 
 public class EmoteRemoveRoleCommand implements BaseCommand<GuildMessageReactionRemoveEvent> {
 
 	@Override
 	public void execute(GuildMessageReactionRemoveEvent event) {
 
-		long msgId = Main.EMOTE_TO_ROLE.getObj().get("messageId").getAsLong();
+		JsonHandler jsonHandler = Start.GUILD_MANAGER.getEmoteConfig().get(event.getGuild());
+
+		long msgId = jsonHandler.getObj().get("messageId").getAsLong();
 
 		if (event.getMember() == null || event.getUser() == null) {
 			return;
 		}
+
+		PropertiesHandler handler = Start.GUILD_MANAGER.getGuildProperties().get(event.getGuild());
 
 		event.retrieveMessage().queue(message -> {
 			if (message.getIdLong() == msgId) {
 				if (event.getReactionEmote().isEmote()) {
 					Emote emote = event.getReactionEmote().getEmote();
 
-					if (Main.EMOTE_TO_ROLE.getObj().has(Long.toString(emote.getIdLong()))) {
-						long roleId = Main.EMOTE_TO_ROLE.getObj().get(Long.toString(emote.getIdLong())).getAsLong();
+					if (jsonHandler.getObj().has(Long.toString(emote.getIdLong()))) {
+						long roleId = jsonHandler.getObj().get(Long.toString(emote.getIdLong())).getAsLong();
 
 						Role role = event.getGuild().getRoleById(roleId);
 
@@ -49,7 +52,11 @@ public class EmoteRemoveRoleCommand implements BaseCommand<GuildMessageReactionR
 								privateChannel.sendMessage(embed).queue();
 							});
 
-							event.getGuild().getTextChannelsByName(Main.CONFIG.getConfigOption("botLog"), true).forEach(textChannel -> textChannel.sendMessage(embed).queue());
+
+							TextChannel textChannel = event.getGuild().getTextChannelById(handler.getConfigOption("botLog"));
+
+							assert textChannel != null;
+							textChannel.sendMessage(embed).queue();
 						}
 					}
 				}

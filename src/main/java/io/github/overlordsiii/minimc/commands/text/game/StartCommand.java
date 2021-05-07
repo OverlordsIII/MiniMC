@@ -5,9 +5,11 @@ import java.util.List;
 import java.util.Random;
 
 
-import io.github.overlordsiii.minimc.Main;
+import io.github.overlordsiii.minimc.Start;
 import io.github.overlordsiii.minimc.api.EmbedCreator;
 import io.github.overlordsiii.minimc.api.command.TextCommand;
+import io.github.overlordsiii.minimc.config.PropertiesHandler;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -25,7 +27,7 @@ public class StartCommand implements TextCommand {
 
 		Message message = event.getMessage();
 
-		if (Main.currentGame == null) {
+		if (Start.currentGame == null) {
 
 			MessageEmbed embed = new EmbedCreator()
 				.setUser(event.getAuthor())
@@ -37,14 +39,14 @@ public class StartCommand implements TextCommand {
 			return;
 		}
 
-		if (Main.currentGame.getAuthor().getIdLong() != message.getAuthor().getIdLong()) {
+		if (Start.currentGame.getAuthor().getIdLong() != message.getAuthor().getIdLong()) {
 
 			MessageEmbed embed = new EmbedCreator()
 				.setUser(event.getAuthor())
 				.addErrorEmbed()
 				.addField("Cannot Start Game!", "Reason: You cannot start the game since you are not the author!")
-				.addLink(Main.currentGame.getMessage())
-				.mentionUser("Game Creator", Main.currentGame.getAuthor())
+				.addLink(Start.currentGame.getMessage())
+				.mentionUser("Game Creator", Start.currentGame.getAuthor())
 				.create(event.getAuthor());
 
 
@@ -52,14 +54,14 @@ public class StartCommand implements TextCommand {
 			return;
 		}
 
-		if (Main.currentGame.getPlayingUsers().size() < 2) {
+		if (Start.currentGame.getPlayingUsers().size() < 2) {
 
 			MessageEmbed embed = new EmbedCreator()
 				.setUser(event.getAuthor())
 				.addErrorEmbed()
 				.addField("Cannot Start Game!", "Reason: Cannot start game with only one person playing!")
-				.addLink(Main.currentGame.getMessage())
-				.mentionUser("Game Creator", Main.currentGame.getAuthor())
+				.addLink(Start.currentGame.getMessage())
+				.mentionUser("Game Creator", Start.currentGame.getAuthor())
 				.create(event.getAuthor());
 
 			message.reply(embed).queue();
@@ -68,9 +70,9 @@ public class StartCommand implements TextCommand {
 
 		channel.sendMessage("Dming Users...").queue();
 
-		List<User> playing = Main.currentGame.getPlayingUsers();
+		List<User> playing = Start.currentGame.getPlayingUsers();
 
-		filterAndDmImposters(playing, event.getAuthor());
+		filterAndDmImposters(playing, event.getAuthor(), event.getGuild());
 
 
 
@@ -82,14 +84,16 @@ public class StartCommand implements TextCommand {
 			.create(event.getAuthor())));
 
 
-		Main.currentGame = null;
+		Start.currentGame = null;
 
 
 	}
 
-	private static void filterAndDmImposters(List<User> users, User executor) {
+	private static void filterAndDmImposters(List<User> users, User executor, Guild guild) {
 
-		int imposters = Main.CONFIG.getConfigOption("imposters", Integer::parseInt);
+		PropertiesHandler handler = Start.GUILD_MANAGER.getGuildProperties().get(guild);
+
+		int imposters = handler.getConfigOption("imposters", Integer::parseInt);
 
 
 		for (int i = 0; i < imposters; i++) {
