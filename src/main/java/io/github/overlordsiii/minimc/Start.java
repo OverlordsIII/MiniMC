@@ -61,17 +61,17 @@ public class Start {
 		.addTextCommand(new StatusCommand()) // change status of discord bot
 		.addTextCommand(new ActivityCommand()) // change the activity of discord bot
 		.addTextCommand(new ActivityTypeCommand()) // change the type of activity of the discord bot
-		.addTextCommand(new MuteCommand()) // mute a user
-		.addTextCommand(new UnmuteCommand()) // unmute a user
-		.addTextCommand(new KickCommand()) // kick a user
-		.addTextCommand(new BanCommand()) // ban a user
-		.addTextCommand(new UnbanCommand()) // unban a user
-		.addTextCommand(new ClearCommand()) // clear a certain amount of messages
+		//.addTextCommand(new MuteCommand()) // mute a user
+		//.addTextCommand(new UnmuteCommand()) // unmute a user
+		//.addTextCommand(new KickCommand()) // kick a user
+		//.addTextCommand(new BanCommand()) // ban a user
+		//.addTextCommand(new UnbanCommand()) // unban a user
+		//.addTextCommand(new ClearCommand()) // clear a certain amount of messages
 		.addTextCommand(new ClearUserCommand()) // clear messages from a user in the last 100 messages
-		.addTextCommand(new AddRoleCommand()) // adds a role to a user
-		.addTextCommand(new LinkCommand())
-		.addTextCommand(new UnlinkCommand())
-		.addTextCommand(new CreateMessageCommand())
+		//.addTextCommand(new AddRoleCommand()) // adds a role to a user
+		//.addTextCommand(new LinkCommand())
+		//.addTextCommand(new UnlinkCommand())
+		//.addTextCommand(new CreateMessageCommand())
 		.addTextCommand(new CreateCommand())
 		.addTextCommand(new GameLinkCommand())
 		.addTextCommand(new StartCommand())
@@ -79,13 +79,13 @@ public class Start {
 		.addTextCommand(new VCUnmuteCommand())
 		.addTextCommand(new RandomChooseCommand())
 		.addTextCommand(new AnnounceCommand()) // sends a message in the announcement category
-		.addJoinCommand(new MuteOnJoinCommand()) // mutes a user if they were muted by the bot
+		//.addJoinCommand(new MuteOnJoinCommand()) // mutes a user if they were muted by the bot
 		.addJoinCommand(new AddDefaultRoleCommand()) // adds a default role to a user if they joined the server
-		.addMsgDeleteCommand(new LogDeleteMessage()) // logs messages that are deleted
+		//.addMsgDeleteCommand(new LogDeleteMessage()) // logs messages that are deleted
 		.addReactionCommand(new RocketReactionCommand())
-		.addReactionCommand(new EmoteAddedRoleCommand())
-		.addReactionRemoveCommand(new EmoteRemoveRoleCommand())
-		.addJoinCommand(new WelcomeMessageCommand())
+		//.addReactionCommand(new EmoteAddedRoleCommand())
+		//.addReactionRemoveCommand(new EmoteRemoveRoleCommand())
+		//.addJoinCommand(new WelcomeMessageCommand())
 		.build();
 
 	public static JDA JDA;
@@ -113,5 +113,7 @@ public class Start {
 			.setActivity(Activity.of(CONFIG.getConfigOption("activityType", Activity.ActivityType::valueOf), CONFIG.getConfigOption("activity")))
 			.setStatus(CONFIG.getConfigOption("status", OnlineStatus::valueOf))
 			.build();
+
+
 	}
 }
