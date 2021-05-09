@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import com.google.gson.JsonObject;
 import io.github.overlordsiii.minimc.Start;
 import io.github.overlordsiii.minimc.api.EmbedCreator;
+import io.github.overlordsiii.minimc.api.GuildExtension;
 import io.github.overlordsiii.minimc.api.MutedEntry;
 import io.github.overlordsiii.minimc.api.command.TextCommand;
 import io.github.overlordsiii.minimc.config.JsonHandler;
@@ -35,7 +36,9 @@ public class MuteCommand implements TextCommand {
 
 		Guild guild = event.getGuild();
 
-		PropertiesHandler handler = Start.GUILD_MANAGER.getGuildProperties().get(event.getGuild());
+		GuildExtension extension = Start.GUILD_MANAGER.getExtension(guild);
+
+		PropertiesHandler handler = extension.getGuildProperties();
 
 		String content = message.getContentDisplay().toLowerCase(Locale.ROOT);
 
@@ -88,7 +91,7 @@ public class MuteCommand implements TextCommand {
 
 			JsonObject object = entry.serialize().getAsJsonObject();
 
-			JsonHandler jsonHandler = Start.GUILD_MANAGER.getMutedGuildConfig().get(event.getGuild());
+			JsonHandler jsonHandler = extension.getMutedConfig();
 
 			jsonHandler.getObj().add(member.getId(), object);
 

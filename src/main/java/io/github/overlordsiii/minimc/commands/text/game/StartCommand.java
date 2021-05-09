@@ -91,7 +91,7 @@ public class StartCommand implements TextCommand {
 
 	private static void filterAndDmImposters(List<User> users, User executor, Guild guild) {
 
-		PropertiesHandler handler = Start.GUILD_MANAGER.getGuildProperties().get(guild);
+		PropertiesHandler handler = Start.GUILD_MANAGER.getExtension(guild).getGuildProperties();
 
 		int imposters = handler.getConfigOption("imposters", Integer::parseInt);
 

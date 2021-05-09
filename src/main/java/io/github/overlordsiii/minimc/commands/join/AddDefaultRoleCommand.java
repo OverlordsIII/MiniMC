@@ -1,10 +1,10 @@
 package io.github.overlordsiii.minimc.commands.join;
 
 import java.awt.Color;
-import java.util.List;
 
 import io.github.overlordsiii.minimc.Start;
 import io.github.overlordsiii.minimc.api.EmbedCreator;
+import io.github.overlordsiii.minimc.api.GuildExtension;
 import io.github.overlordsiii.minimc.api.command.BaseCommand;
 import io.github.overlordsiii.minimc.config.PropertiesHandler;
 import net.dv8tion.jda.api.entities.Member;
@@ -17,7 +17,9 @@ public class AddDefaultRoleCommand implements BaseCommand<GuildMemberJoinEvent> 
 	@Override
 	public void execute(GuildMemberJoinEvent event) {
 
-		PropertiesHandler handler = Start.GUILD_MANAGER.getGuildProperties().get(event.getGuild());
+		GuildExtension extension = Start.GUILD_MANAGER.getExtension(event.getGuild());
+
+		PropertiesHandler handler = extension.getGuildProperties();
 
 		Role role = event.getGuild().getRoleById(handler.getConfigOption("defaultRole"));
 

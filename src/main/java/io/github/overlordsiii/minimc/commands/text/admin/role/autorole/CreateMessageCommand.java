@@ -9,6 +9,7 @@ import java.util.Objects;
 import com.google.gson.JsonObject;
 import io.github.overlordsiii.minimc.Start;
 import io.github.overlordsiii.minimc.api.EmbedCreator;
+import io.github.overlordsiii.minimc.api.GuildExtension;
 import io.github.overlordsiii.minimc.api.command.TextCommand;
 import io.github.overlordsiii.minimc.config.JsonHandler;
 import io.github.overlordsiii.minimc.config.PropertiesHandler;
@@ -38,7 +39,9 @@ public class CreateMessageCommand implements TextCommand {
 
 		User user = event.getAuthor();
 
-		JsonHandler jsonHandler = Start.GUILD_MANAGER.getEmoteConfig().get(event.getGuild());
+		GuildExtension extension = Start.GUILD_MANAGER.getExtension(guild);
+
+		JsonHandler jsonHandler = extension.getEmoteConfig();
 
 		MessageEmbed test = new EmbedCreator()
 			.setUser(event.getAuthor())
@@ -54,7 +57,7 @@ public class CreateMessageCommand implements TextCommand {
 			.setColor(Color.CYAN)
 			.setUser(Start.JDA.getSelfUser());
 
-		PropertiesHandler handler = Start.GUILD_MANAGER.getGuildProperties().get(event.getGuild());
+		PropertiesHandler handler = extension.getGuildProperties();
 
 		TextChannel textChannel = event.getGuild().getTextChannelById(handler.getConfigOption("roleChannel"));
 

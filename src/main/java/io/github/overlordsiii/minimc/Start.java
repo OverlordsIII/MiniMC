@@ -1,27 +1,16 @@
 package io.github.overlordsiii.minimc;
 
+import java.util.UUID;
+
 import javax.security.auth.login.LoginException;
 
 import io.github.overlordsiii.minimc.api.command.CommandHandler;
 
+import io.github.overlordsiii.minimc.commands.hypix.UnverifyCommand;
+import io.github.overlordsiii.minimc.commands.hypix.VerifyCommand;
 import io.github.overlordsiii.minimc.commands.join.AddDefaultRoleCommand;
-import io.github.overlordsiii.minimc.commands.join.MuteOnJoinCommand;
-import io.github.overlordsiii.minimc.commands.join.WelcomeMessageCommand;
-import io.github.overlordsiii.minimc.commands.log.LogDeleteMessage;
 import io.github.overlordsiii.minimc.commands.text.admin.AnnounceCommand;
-import io.github.overlordsiii.minimc.commands.text.admin.clear.ClearCommand;
 import io.github.overlordsiii.minimc.commands.text.admin.clear.ClearUserCommand;
-import io.github.overlordsiii.minimc.commands.text.admin.kick.BanCommand;
-import io.github.overlordsiii.minimc.commands.text.admin.kick.KickCommand;
-import io.github.overlordsiii.minimc.commands.text.admin.kick.UnbanCommand;
-import io.github.overlordsiii.minimc.commands.text.admin.mute.MuteCommand;
-import io.github.overlordsiii.minimc.commands.text.admin.mute.UnmuteCommand;
-import io.github.overlordsiii.minimc.commands.text.admin.role.AddRoleCommand;
-import io.github.overlordsiii.minimc.commands.text.admin.role.autorole.CreateMessageCommand;
-import io.github.overlordsiii.minimc.commands.text.admin.role.autorole.EmoteAddedRoleCommand;
-import io.github.overlordsiii.minimc.commands.text.admin.role.autorole.EmoteRemoveRoleCommand;
-import io.github.overlordsiii.minimc.commands.text.admin.role.autorole.LinkCommand;
-import io.github.overlordsiii.minimc.commands.text.admin.role.autorole.UnlinkCommand;
 import io.github.overlordsiii.minimc.commands.text.admin.vc.VCMuteCommand;
 import io.github.overlordsiii.minimc.commands.text.admin.vc.VCUnmuteCommand;
 import io.github.overlordsiii.minimc.commands.text.fun.RandomChooseCommand;
@@ -42,6 +31,7 @@ import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.hooks.InterfacedEventManager;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
+import net.hypixel.api.HypixelAPI;
 
 public class Start {
 
@@ -56,6 +46,8 @@ public class Start {
 		.setComment("This file sets the api key for hypixel operations")
 		.addConfigOption("apiKey", "")
 		.build();
+
+	public static HypixelAPI API = new HypixelAPI(UUID.fromString(API_KEY.getConfigOption("apiKey")));
 
 	public static final CommandHandler COMMAND_HANDLER = CommandHandler.builder()
 		.addTextCommand(new StatusCommand()) // change status of discord bot
@@ -75,6 +67,7 @@ public class Start {
 		.addTextCommand(new CreateCommand())
 		.addTextCommand(new GameLinkCommand())
 		.addTextCommand(new StartCommand())
+		.addTextCommand(new VerifyCommand())
 		.addTextCommand(new VCMuteCommand())
 		.addTextCommand(new VCUnmuteCommand())
 		.addTextCommand(new RandomChooseCommand())
@@ -83,6 +76,7 @@ public class Start {
 		.addJoinCommand(new AddDefaultRoleCommand()) // adds a default role to a user if they joined the server
 		//.addMsgDeleteCommand(new LogDeleteMessage()) // logs messages that are deleted
 		.addReactionCommand(new RocketReactionCommand())
+		.addTextCommand(new UnverifyCommand())
 		//.addReactionCommand(new EmoteAddedRoleCommand())
 		//.addReactionRemoveCommand(new EmoteRemoveRoleCommand())
 		//.addJoinCommand(new WelcomeMessageCommand())

@@ -1,11 +1,8 @@
 package io.github.overlordsiii.minimc.commands.text.fun;
 
-import java.util.List;
-
 import io.github.overlordsiii.minimc.Start;
 import io.github.overlordsiii.minimc.api.command.BaseCommand;
 import io.github.overlordsiii.minimc.config.PropertiesHandler;
-import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class MentionMeIMentionYou implements BaseCommand<GuildMessageReceivedEvent> {
@@ -17,7 +14,7 @@ public class MentionMeIMentionYou implements BaseCommand<GuildMessageReceivedEve
 			return;
 		}
 
-		PropertiesHandler handler = Start.GUILD_MANAGER.getGuildProperties().get(event.getGuild());
+		PropertiesHandler handler = Start.GUILD_MANAGER.getExtension(event.getGuild()).getGuildProperties();
 
 
 		if (handler.getConfigOption("spamChannel").equalsIgnoreCase(event.getChannel().getId())) {

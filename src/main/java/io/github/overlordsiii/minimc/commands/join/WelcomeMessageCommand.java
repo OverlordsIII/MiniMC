@@ -19,7 +19,7 @@ public class WelcomeMessageCommand implements BaseCommand<GuildMemberJoinEvent> 
 			.setColor(Color.GREEN)
 			.create(event.getUser());
 
-		PropertiesHandler handler = Start.GUILD_MANAGER.getGuildProperties().get(event.getGuild());
+		PropertiesHandler handler = Start.GUILD_MANAGER.getExtension(event.getGuild()).getGuildProperties();
 
 		TextChannel channel = event.getGuild().getTextChannelById(handler.getConfigOption("welcomeChannel"));
 

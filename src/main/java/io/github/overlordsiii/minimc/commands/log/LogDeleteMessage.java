@@ -2,7 +2,6 @@ package io.github.overlordsiii.minimc.commands.log;
 
 import java.awt.Color;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 import io.github.overlordsiii.minimc.Start;
@@ -20,7 +19,7 @@ public class LogDeleteMessage implements BaseCommand<MessageDeleteEvent> {
 
 		String id = event.getMessageId();
 
-		PropertiesHandler handler = Start.GUILD_MANAGER.getGuildProperties().get(event.getGuild());
+		PropertiesHandler handler = Start.GUILD_MANAGER.getExtension(event.getGuild()).getGuildProperties();
 
 		TextChannel channel = event.getGuild().getTextChannelById(handler.getConfigOption("botLog"));
 

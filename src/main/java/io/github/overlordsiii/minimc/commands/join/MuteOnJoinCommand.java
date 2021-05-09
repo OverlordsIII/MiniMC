@@ -1,13 +1,14 @@
 package io.github.overlordsiii.minimc.commands.join;
 
 import java.awt.Color;
-import java.util.List;
 
 import com.google.gson.JsonObject;
 import io.github.overlordsiii.minimc.Start;
 import io.github.overlordsiii.minimc.api.EmbedCreator;
+import io.github.overlordsiii.minimc.api.GuildExtension;
 import io.github.overlordsiii.minimc.api.MutedEntry;
 import io.github.overlordsiii.minimc.api.command.BaseCommand;
+import io.github.overlordsiii.minimc.config.JsonHandler;
 import io.github.overlordsiii.minimc.config.PropertiesHandler;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
@@ -18,11 +19,15 @@ public class MuteOnJoinCommand implements BaseCommand<GuildMemberJoinEvent> {
 	@Override
 	public void execute(GuildMemberJoinEvent event) {
 
-		JsonObject object = Start.GUILD_MANAGER.getMutedGuildConfig().get(event.getGuild()).getObj();
+		GuildExtension extension = Start.GUILD_MANAGER.getExtension(event.getGuild());
+
+		JsonHandler jsonHandler = extension.getMutedConfig();
+
+		JsonObject object = jsonHandler.getObj();
 
 		Member member = event.getMember();
 
-		PropertiesHandler handler = Start.GUILD_MANAGER.getGuildProperties().get(event.getGuild());
+		PropertiesHandler handler = extension.getGuildProperties();
 
 		Role roles = event.getGuild().getRoleById(handler.getConfigOption("mutedRole"));
 

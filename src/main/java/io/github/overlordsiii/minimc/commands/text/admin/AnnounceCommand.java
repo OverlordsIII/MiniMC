@@ -21,7 +21,7 @@ public class AnnounceCommand implements TextCommand {
 
 		int index = message.getContentRaw().indexOf(" ");
 
-		PropertiesHandler handler = Start.GUILD_MANAGER.getGuildProperties().get(event.getGuild());
+		PropertiesHandler handler = Start.GUILD_MANAGER.getExtension(event.getGuild()).getGuildProperties();
 
 		Checks.check(index != -1, "Must have space when executing command !announce");
 

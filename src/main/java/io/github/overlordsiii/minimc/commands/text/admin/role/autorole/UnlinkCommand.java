@@ -6,6 +6,7 @@ import java.util.List;
 
 import io.github.overlordsiii.minimc.Start;
 import io.github.overlordsiii.minimc.api.EmbedCreator;
+import io.github.overlordsiii.minimc.api.GuildExtension;
 import io.github.overlordsiii.minimc.api.command.TextCommand;
 import io.github.overlordsiii.minimc.config.JsonHandler;
 import net.dv8tion.jda.api.entities.Emote;
@@ -18,7 +19,9 @@ public class UnlinkCommand implements TextCommand {
 	public void execute(MessageReceivedEvent event) {
 		List<Emote> emote = event.getMessage().getEmotes();
 
-		JsonHandler handler = Start.GUILD_MANAGER.getEmoteConfig().get(event.getGuild());
+		GuildExtension extension = Start.GUILD_MANAGER.getExtension(event.getGuild());
+
+		JsonHandler handler = extension.getEmoteConfig();
 
 		emote.forEach(emote1 -> {
 			handler.getObj().remove(Long.toString(emote1.getIdLong()));

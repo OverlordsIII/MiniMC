@@ -6,6 +6,7 @@ import java.util.List;
 
 import io.github.overlordsiii.minimc.Start;
 import io.github.overlordsiii.minimc.api.EmbedCreator;
+import io.github.overlordsiii.minimc.api.GuildExtension;
 import io.github.overlordsiii.minimc.api.command.TextCommand;
 import io.github.overlordsiii.minimc.config.JsonHandler;
 import net.dv8tion.jda.api.entities.Emote;
@@ -33,7 +34,9 @@ public class LinkCommand implements TextCommand {
 
 		List<Role> roles = message.getMentionedRoles();
 
-		JsonHandler handler = Start.GUILD_MANAGER.getEmoteConfig().get(event.getGuild());
+		GuildExtension extension = Start.GUILD_MANAGER.getExtension(guild);
+
+		JsonHandler handler = extension.getEmoteConfig();
 
 		if (roles.size() != 1) {
 			throw new IllegalArgumentException("You cannot link multiple roles to an emoji! Please mention only one role and one emoji in your `!link` command");

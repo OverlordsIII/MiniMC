@@ -4,6 +4,7 @@ import java.awt.Color;
 
 import io.github.overlordsiii.minimc.Start;
 import io.github.overlordsiii.minimc.api.EmbedCreator;
+import io.github.overlordsiii.minimc.api.GuildExtension;
 import io.github.overlordsiii.minimc.api.command.BaseCommand;
 import io.github.overlordsiii.minimc.config.JsonHandler;
 import io.github.overlordsiii.minimc.config.PropertiesHandler;
@@ -17,7 +18,9 @@ public class EmoteAddedRoleCommand implements BaseCommand<GuildMessageReactionAd
 	@Override
 	public void execute(GuildMessageReactionAddEvent event) {
 
-		JsonHandler jsonHandler = Start.GUILD_MANAGER.getEmoteConfig().get(event.getGuild());
+		GuildExtension extension = Start.GUILD_MANAGER.getExtension(event.getGuild());
+
+		JsonHandler jsonHandler = extension.getEmoteConfig();
 
 		long msgId = jsonHandler.getObj().get("messageId").getAsLong();
 
@@ -25,7 +28,7 @@ public class EmoteAddedRoleCommand implements BaseCommand<GuildMessageReactionAd
 			return;
 		}
 
-		PropertiesHandler handler = Start.GUILD_MANAGER.getGuildProperties().get(event.getGuild());
+		PropertiesHandler handler = extension.getGuildProperties();
 
 		event.retrieveMessage().queue(message -> {
 			if (message.getIdLong() == msgId) {
