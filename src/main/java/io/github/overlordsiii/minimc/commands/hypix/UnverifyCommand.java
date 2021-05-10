@@ -9,6 +9,7 @@ import io.github.overlordsiii.minimc.api.EmbedCreator;
 import io.github.overlordsiii.minimc.api.GuildExtension;
 import io.github.overlordsiii.minimc.api.command.TextCommand;
 import io.github.overlordsiii.minimc.config.JsonHandler;
+import io.github.overlordsiii.minimc.config.PropertiesHandler;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
@@ -16,6 +17,15 @@ import org.jetbrains.annotations.NotNull;
 public class UnverifyCommand implements TextCommand {
 	@Override
 	public void execute(MessageReceivedEvent event) {
+
+		PropertiesHandler propertiesHandler = Start.GUILD_MANAGER.getExtension(event.getGuild()).getGuildProperties();
+
+		String id = propertiesHandler.getConfigOption("verifyId");
+
+		if (!event.getChannel().getId().equals(id)) {
+			return;
+		}
+
 		GuildExtension guildExtension = Start.GUILD_MANAGER.getExtension(event.getGuild());
 
 		JsonHandler handler = guildExtension.getUuidConfig();

@@ -23,6 +23,7 @@ public class GuildExtension {
 		.put("welcomeChannel", "")
 		.put("spamChannel", "")
 		.put("imposters", "1")
+		.put("verifyChannel", "")
 		.build();
 
 	private final PropertiesHandler guildProperties;

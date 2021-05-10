@@ -14,6 +14,7 @@ import io.github.overlordsiii.minimc.Start;
 import io.github.overlordsiii.minimc.api.EmbedCreator;
 import io.github.overlordsiii.minimc.api.command.TextCommand;
 import io.github.overlordsiii.minimc.config.JsonHandler;
+import io.github.overlordsiii.minimc.config.PropertiesHandler;
 import io.github.overlordsiii.minimc.util.MojangAPIUtil;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -31,6 +32,15 @@ public class VerifyCommand implements TextCommand {
 
 	@Override
 	public void execute(MessageReceivedEvent event) {
+
+		PropertiesHandler handler = Start.GUILD_MANAGER.getExtension(event.getGuild()).getGuildProperties();
+
+		String id = handler.getConfigOption("verifyId");
+
+		if (!event.getChannel().getId().equals(id)) {
+			return;
+		}
+
 		Message message = event.getMessage();
 
 		if (event.getMessage().getContentDisplay().trim().equals("!verify")) {
@@ -53,9 +63,9 @@ public class VerifyCommand implements TextCommand {
 
 				if (discord.equals(event.getAuthor().getAsTag())) {
 
-					JsonHandler handler = Start.GUILD_MANAGER.getExtension(event.getGuild()).getUuidConfig();
+					JsonHandler jsonHandler = Start.GUILD_MANAGER.getExtension(event.getGuild()).getUuidConfig();
 
-					JsonObject object = handler.getObj();
+					JsonObject object = jsonHandler.getObj();
 
 					if (object.has(event.getAuthor().getId())) {
 						throw new RuntimeException("You are already verified! Run !unverify to unverify yourself first");
@@ -64,7 +74,7 @@ public class VerifyCommand implements TextCommand {
 					object.add(event.getAuthor().getId(), new JsonPrimitive(uuid));
 
 					try {
-						handler.save();
+						jsonHandler.save();
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
