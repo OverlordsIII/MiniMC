@@ -7,17 +7,21 @@ import java.nio.charset.StandardCharsets;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 import io.github.overlordsiii.minimc.Start;
 import io.github.overlordsiii.minimc.api.EmbedCreator;
+import io.github.overlordsiii.minimc.api.GuildExtension;
 import io.github.overlordsiii.minimc.api.command.TextCommand;
+import io.github.overlordsiii.minimc.api.hypix.Player;
 import io.github.overlordsiii.minimc.config.JsonHandler;
 import io.github.overlordsiii.minimc.config.PropertiesHandler;
 import io.github.overlordsiii.minimc.util.MojangAPIUtil;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.apache.commons.io.IOUtils;
 import org.jetbrains.annotations.NotNull;
@@ -35,11 +39,17 @@ public class VerifyCommand implements TextCommand {
 
 		PropertiesHandler handler = Start.GUILD_MANAGER.getExtension(event.getGuild()).getGuildProperties();
 
-		String id = handler.getConfigOption("verifyId");
+		String id = handler.getConfigOption("verifyChannel");
 
-		if (!event.getChannel().getId().equals(id)) {
+		String channelId = event.getChannel().getId();
+
+		boolean bl = !channelId.equals(id);
+
+		if (bl) {
 			return;
 		}
+
+
 
 		Message message = event.getMessage();
 
@@ -49,7 +59,17 @@ public class VerifyCommand implements TextCommand {
 
 		String ign = message.getContentDisplay().split("\\s+")[1];
 
-		String uuid = MojangAPIUtil.ignToUuid(ign);
+		String uuid;
+
+		try {
+			uuid = MojangAPIUtil.ignToUuid(ign);
+		} catch (IllegalStateException e) {
+			throw new RuntimeException("Cannot verify a username that does not exist!");
+		}
+
+		Player player = new Player(ign, event.getAuthor().getId());
+
+		Role role = event.getGuild().getRoleById(handler.getConfigOption("verifyRole"));
 
 		Start.API.getPlayerByUuid(uuid).thenAccept(playerReply -> {
 			JsonObject playerObj = playerReply.getPlayer();
@@ -63,21 +83,37 @@ public class VerifyCommand implements TextCommand {
 
 				if (discord.equals(event.getAuthor().getAsTag())) {
 
-					JsonHandler jsonHandler = Start.GUILD_MANAGER.getExtension(event.getGuild()).getUuidConfig();
+					GuildExtension extension = Start.GUILD_MANAGER.getExtension(event.getGuild());
+
+					JsonHandler jsonHandler = extension.getPlayerConfig();
 
 					JsonObject object = jsonHandler.getObj();
 
 					if (object.has(event.getAuthor().getId())) {
-						throw new RuntimeException("You are already verified! Run !unverify to unverify yourself first");
+						MessageEmbed embed = new EmbedCreator()
+							.addErrorEmbed()
+							.setUser(Start.JDA.getSelfUser())
+							.appendDescription("You are already verified! Run !unverify to unverify")
+							.create(event.getAuthor());
+
+						event.getChannel().sendMessage(embed).queue();
+
+						return;
 					}
 
-					object.add(event.getAuthor().getId(), new JsonPrimitive(uuid));
+					event.getGuild().addRoleToMember(event.getMember(), role).queue();
+
+					object.add(event.getAuthor().getId(), player.serialize());
+
+					extension.addPlayer(player);
 
 					try {
 						jsonHandler.save();
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
+
+
 
 					MessageEmbed embed = new EmbedCreator()
 						.setTitle("Verified Discord Account with Hypixel Account")
@@ -88,23 +124,22 @@ public class VerifyCommand implements TextCommand {
 
 					event.getChannel().sendMessage(embed).queue();
 				} else {
-					MessageEmbed creator = new EmbedCreator()
-						.setUser(Start.JDA.getSelfUser())
+					MessageEmbed embed = new EmbedCreator()
 						.addErrorEmbed()
-						.appendDescription("Could not verify discord as the hypixel user has set a different account as their discord!")
+						.setUser(Start.JDA.getSelfUser())
+						.appendDescription("Cannot verify as the hypixel account has a different discord account attached to it!")
 						.create(event.getAuthor());
 
-					event.getChannel().sendMessage(creator).queue();
+					event.getChannel().sendMessage(embed).queue();
 				}
 			} else {
-
-				MessageEmbed creator = new EmbedCreator()
-					.setUser(Start.JDA.getSelfUser())
+				MessageEmbed embed = new EmbedCreator()
 					.addErrorEmbed()
-					.appendDescription("Could not verify discord as the hypixel user does not have a discord account attached to their hypixel data!")
+					.setUser(Start.JDA.getSelfUser())
+					.appendDescription("Cannot verify as the hypixel account does not have a discord account attached to it!")
 					.create(event.getAuthor());
 
-				event.getChannel().sendMessage(creator).queue();
+				event.getChannel().sendMessage(embed).queue();
 			}
 		});
 

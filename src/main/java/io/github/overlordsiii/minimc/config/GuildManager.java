@@ -12,19 +12,6 @@ import net.dv8tion.jda.api.entities.Guild;
 
 public class GuildManager {
 
-	private static final Path PARENT_PATH = Paths.get("src", "main", "resources");
-
-	private static final ImmutableMap<String, String> configKeys = ImmutableMap.<String, String>builder()
-	.put("mutedRole", "")
-	.put("defaultRole", "")
-	.put("botLog", "")
-	.put("roleChannel", "")
-	.put("announcementChannel", "")
-	.put("welcomeChannel", "")
-	.put("spamChannel", "")
-	.put("imposters", "1")
-	.build();
-
 	private final Map<Guild, PropertiesHandler> guildProperties = new HashMap<>();
 
 	private final Map<Guild, GuildExtension> extensionMap = new HashMap<>();

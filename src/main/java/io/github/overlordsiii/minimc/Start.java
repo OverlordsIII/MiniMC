@@ -24,6 +24,8 @@ import io.github.overlordsiii.minimc.commands.text.status.StatusCommand;
 import io.github.overlordsiii.minimc.config.GuildManager;
 import io.github.overlordsiii.minimc.config.PropertiesHandler;
 import io.github.overlordsiii.minimc.api.AmongUsGame;
+import io.github.overlordsiii.minimc.util.MojangAPIUtil;
+import io.github.overlordsiii.minimc.util.UUIDUtil;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -47,7 +49,7 @@ public class Start {
 		.addConfigOption("apiKey", "")
 		.build();
 
-	public static HypixelAPI API = new HypixelAPI(UUID.fromString(API_KEY.getConfigOption("apiKey")));
+	public static HypixelAPI API = new HypixelAPI(UUIDUtil.stringToUuid(API_KEY.getConfigOption("apiKey")));
 
 	public static final CommandHandler COMMAND_HANDLER = CommandHandler.builder()
 		.addTextCommand(new StatusCommand()) // change status of discord bot
@@ -98,6 +100,7 @@ public class Start {
 
 
 	public static void main(String[] args) throws LoginException {
+
 		JDA = JDABuilder
 			.createDefault(TOKEN.getConfigOption("token"))
 			.setEventManager(new InterfacedEventManager())

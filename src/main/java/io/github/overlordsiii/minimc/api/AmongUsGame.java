@@ -21,12 +21,6 @@ public class AmongUsGame {
 		this.author = authorId;
 	}
 
-	public void getNumberOfPlayerPlaying(MessageChannel channel, Consumer<ReactionPaginationAction> queueAction) {
-		channel.retrieveMessageById(message.getIdLong())
-				.map(message -> Objects.requireNonNull(message.retrieveReactionUsers("\uD83D\uDE80")))
-				.queue(queueAction);
-	}
-
 	public List<User> getPlayingUsers() {
 		return playingUsers;
 	}

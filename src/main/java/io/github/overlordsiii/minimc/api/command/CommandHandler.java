@@ -97,14 +97,11 @@ public class CommandHandler extends ListenerAdapter {
 				} catch (Exception e) {
 					MessageEmbed embed = new EmbedCreator()
 						.addErrorEmbed()
-						.setUser(event.getAuthor())
+						.setUser(Start.JDA.getSelfUser())
 						.addField("Reason", e.getMessage())
 						.create(event.getAuthor());
 
 					e.printStackTrace();
-					if (!(e instanceof IllegalArgumentException) && !(e instanceof IllegalStateException)) {
-						e.printStackTrace();
-					}
 
 					event.getChannel().sendMessage(embed).queue();
 				}
